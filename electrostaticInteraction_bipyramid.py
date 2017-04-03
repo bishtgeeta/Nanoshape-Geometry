@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import time
 from tqdm import tqdm
+import copy
 
 
 class BiPyramid(object):
@@ -106,9 +107,17 @@ class BiPyramid(object):
 		#~ ax.scatter(xi,yi,zi,color='steelblue')
 		ax.scatter(xo,yo,zo,color='orangered', c='orangered')
 		plt.show()
-            
-   
-            
+             
+    def shift(self, d):
+        new = copy.deepcopy(self)
+        for key in new.allPointsDict.keys():
+            new.allPointsDict[key] = new.allPointsDict[key] + d
+        
+        return new
+        
+        
+ 
+         
 def interactionPotential(rod1,rod2):
     U = 0
     conc = 500e-6
@@ -119,22 +128,27 @@ def interactionPotential(rod1,rod2):
     eps0 = 81
     kB = 1.38e-23
     T = 300
-    #counter=0
-    
+
     for key1 in rod1.allPointsDict.keys():
-        if (key1 != 'allPoints'):
-            for point1 in rod1.allPointsDict[key1]:
-                x1,y1,z1,w1 = point1[0],point1[1],point1[2],rod1.weights[key1]
-                for key2 in rod2.allPointsDict.keys():
-                    if (key2 != 'allPoints'):
-                        for point2 in rod2.allPointsDict[key2]:
-                            x2,y2,z2,w2 = point2[0],point2[1],point2[2],rod2.weights[key2]
-                            r = numpy.sqrt((x2-x1)**2 + (y2-y1)**2 + (z2-z1)**2)*1e-9
-                            
-                            U += (w1*w2) * i_4PiEps*e**2/(eps0*r) * numpy.exp(-kappa*(r-sigma))/(1+kappa*sigma) / (kB*T)
-                            #if (w1*w2 > 0):
-                                #counter+=1
-    #print counter
+        if (key1 == 'allPoints'):
+            continue
+        w1 = rod1.weights[key1]
+        if w1 == 0:
+            continue
+        point1 = rod1.allPointsDict[key1]
+        for key2 in rod2.allPointsDict.keys():
+            if (key2 == 'allPoints'):
+                continue
+            w2 = rod2.weights[key2]
+            if w2 == 0:
+                continue
+            
+            point2 = rod2.allPointsDict[key2]
+            distance_vector = numpy.dstack((numpy.subtract.outer(point1[:,i], point2[:,i]) for i in range(3)))
+            r = numpy.linalg.norm(distance_vector, axis=-1)*1e-9
+            
+            U += (i_4PiEps*e**2/(eps0*r) * numpy.exp(-kappa*(r-sigma))/(1+kappa*sigma) / (kB*T)).sum()
+
     return U
     
 start = time.time()
@@ -150,13 +164,15 @@ bp1 = BiPyramid(0,0,0,15,15,50,15,15,50)
 
 print "Side by side"
 for d in tqdm(dList):
-    bp2 = BiPyramid(15+d,0,0,15,15,50,15,15,50)
+    d_vector = numpy.array([15+d, 0, 0])
+    bp2 = bp1.shift(d_vector)
     U =  interactionPotential(bp1,bp2)
     Uside2sideList.append(U)
     outFile1.write("%f %f\n" %(d,U))
 print "Tip to tip"
 for d in tqdm(dList):
-    bp2 = BiPyramid(0,0,50+d,15,15,50,15,15,50)
+    d_vector = numpy.array([0, 0, 50+d])
+    bp2 = bp1.shift(d_vector)
     U = interactionPotential(bp1,bp2)
     Utip2tipList.append(U)
     outFile2.write("%f %f\n" %(d,U))
