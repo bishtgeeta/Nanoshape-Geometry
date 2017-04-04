@@ -1,6 +1,6 @@
 import numpy
+import mayavi.mlab as maya
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
 import time
 from tqdm import tqdm
 import copy
@@ -77,8 +77,6 @@ class Sphere(object):
         return numpy.linalg.norm(self.center - point) <= self.radius
         
     def visualize(self):
-		fig = plt.figure()
-		ax = Axes3D(fig)
 		vertex_points = self.allPointsDict['vertex']
 		edge_points = self.allPointsDict['edge']
 		face_points = self.allPointsDict['face']
@@ -86,9 +84,9 @@ class Sphere(object):
 		outer_points = numpy.row_stack((vertex_points, edge_points, face_points))
 		xi,yi,zi = inner_points.T
 		xo,yo,zo = outer_points.T
-		#~ ax.scatter(xi,yi,zi,color='steelblue')
-		ax.scatter(xo,yo,zo,color='orangered', c='orangered')
-		plt.show()
+		maya.points3d(xo,yo,zo,color=(0.2,0.2,0.8),scale_factor=1)
+		maya.points3d(xi,yi,zi,color=(0.8,0.2,0),scale_factor=0.5)
+
         
     def shift(self, d):
         new = copy.deepcopy(self)
