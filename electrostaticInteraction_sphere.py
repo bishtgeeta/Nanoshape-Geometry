@@ -1,6 +1,6 @@
 import numpy
-import mayavi.mlab as maya
 import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 import time
 from tqdm import tqdm
 import copy
@@ -77,15 +77,19 @@ class Sphere(object):
         return numpy.linalg.norm(self.center - point) <= self.radius
         
     def visualize(self):
-		vertex_points = self.allPointsDict['vertex']
-		edge_points = self.allPointsDict['edge']
-		face_points = self.allPointsDict['face']
-		inner_points = self.allPointsDict['inner']
-		outer_points = numpy.row_stack((vertex_points, edge_points, face_points))
-		xi,yi,zi = inner_points.T
-		xo,yo,zo = outer_points.T
-		maya.points3d(xo,yo,zo,color=(0.2,0.2,0.8),scale_factor=1)
-		maya.points3d(xi,yi,zi,color=(0.8,0.2,0),scale_factor=0.5)
+        fig = plt.figure()
+        ax = Axes3D(fig)
+        vertex_points = self.allPointsDict['vertex']
+        edge_points = self.allPointsDict['edge']
+        face_points = self.allPointsDict['face']
+        inner_points = self.allPointsDict['inner']
+        outer_points = numpy.row_stack((vertex_points, edge_points, face_points))
+        xi,yi,zi = inner_points.T
+        xo,yo,zo = outer_points.T
+        ax.scatter(xi,yi,zi,color='steelblue')
+        ax.scatter(xo,yo,zo,color='orangered', c='orangered')
+        plt.show()
+
 
         
     def shift(self, d):
@@ -135,11 +139,11 @@ start = time.time()
 timeList,dList = [],numpy.concatenate((numpy.linspace(0,10,101),range(11,101)))
 Uside2sideList = []
 
-outFile1 = open('interactionPotential_spheres.dat', 'w')
+outFile1 = open(r'Z:\Geeta-Share\sphere assembly\interaction potential\interactionPotential_spheres.dat', 'w')
 outFile1.write("Separation Potential\n")
 
 
-sphere1 = Sphere(0,0,0,20,40)
+sphere1 = Sphere(0,0,0,20,30)
 
 print "Sphere ..."
 for d in tqdm(dList):
