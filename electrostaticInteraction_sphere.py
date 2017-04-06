@@ -143,7 +143,7 @@ outFile1 = open(r'Z:\Geeta-Share\sphere assembly\interaction potential\interacti
 outFile1.write("Separation Potential\n")
 
 
-sphere1 = Sphere(0,0,0,20,30)
+sphere1 = Sphere(0,0,0,20,20)
 
 print "Sphere ..."
 for d in tqdm(dList):
@@ -162,6 +162,7 @@ outFile1.close()
     
 fig = plt.figure(figsize=(4,3))
 ax = fig.add_axes([0,0,1,1])
+ax.set_yscale("log")
 ax.plot(dList,Uside2sideList)
 ax.set_xlabel('Distance between spheres (nm)')
 ax.set_ylabel('Interaction potential (J)')
