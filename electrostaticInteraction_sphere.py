@@ -11,7 +11,7 @@ class Sphere(object):
         L = W = H = R*2
         Nx = Ny = Nz = Nd
         dx,dy,dz = 1.0*L/Nx,1.0*W/Ny,1.0*H/Nz
-        self.eps = numpy.linalg.norm([dx,dy,dz])*1e-2
+        self.point_size = numpy.linalg.norm([dx,dy,dz])
         
         self.radius = R
         self.center = numpy.array([x + R, y + R, z + R])
@@ -34,7 +34,8 @@ class Sphere(object):
                     
         self.allPointsDict['allPoints'] = allPoints[:point_counter]
         vertex_counter = edge_counter = face_counter = inner_counter = 0
-        for point in allPoints:
+        print "Creating a sphere "
+        for point in tqdm(allPoints):
             allNeighbors = numpy.array([
 						[point[0]-dx,point[1],point[2]],
 						[point[0]+dx,point[1],point[2]],
@@ -46,7 +47,7 @@ class Sphere(object):
             totalNeighbors = 0
             for neighbor in allNeighbors:
                 _d = numpy.linalg.norm(neighbor - allPoints, axis=1)
-                totalNeighbors += (_d < self.eps).sum()
+                totalNeighbors += (_d < self.point_size*1e-2).sum()
                         
             if (totalNeighbors == 3):
                 self.allPointsDict['vertex'][vertex_counter] = point
@@ -142,7 +143,7 @@ outFile1 = open(r'Z:\Geeta-Share\sphere assembly\interaction potential\interacti
 outFile1.write("Separation Potential\n")
 
 
-sphere1 = Sphere(0,0,0,20,20)
+sphere1 = Sphere(0,0,0,10,40)
 
 print "Sphere ..."
 for d in tqdm(dList):
