@@ -11,7 +11,7 @@ class Sphere(object):
         L = W = H = R*2
         Nx = Ny = Nz = Nd
         dx,dy,dz = 1.0*L/Nx,1.0*W/Ny,1.0*H/Nz
-        eps = 1e-10
+        self.eps = numpy.linalg.norm([dx,dy,dz])*1e-2
         
         self.radius = R
         self.center = numpy.array([x + R, y + R, z + R])
@@ -46,7 +46,7 @@ class Sphere(object):
             totalNeighbors = 0
             for neighbor in allNeighbors:
                 _d = numpy.linalg.norm(neighbor - allPoints, axis=1)
-                totalNeighbors += (_d < eps).sum()
+                totalNeighbors += (_d < self.eps).sum()
                         
             if (totalNeighbors == 3):
                 self.allPointsDict['vertex'][vertex_counter] = point
@@ -91,7 +91,6 @@ class Sphere(object):
         plt.show()
 
 
-        
     def shift(self, d):
         new = copy.deepcopy(self)
         for key in new.allPointsDict.keys():

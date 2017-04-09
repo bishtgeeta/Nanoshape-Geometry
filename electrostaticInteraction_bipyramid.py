@@ -7,14 +7,14 @@ import copy
 
 
 class BiPyramid(object):
-    def __init__(self,x,y,z,L,W,H,Nx,Ny,Nz):
-        dx,dy,dz = 1.0*L/Nx,1.0*W/Ny,1.0*H/Nz
-        eps = 1e-10
+    def __init__(self,x,y,z,R,H,Nx,Ny,Nz):
+        L = W = 2*R
+        dx,dy,dz = 1.0*L/Nx, 1.0*W/Ny, 1.0*H/Nz
+        self.eps = numpy.linalg.norm([dx,dy,dz])*1e-2
         
         self.center = numpy.array([x + L/2., y + W/2., z + H/2.])
-        self.max_length = L
-        self.max_width = W
         self.max_height = H
+        self.max_radius = R
         
         self.allPointsDict = {}
         self.allPointsDict['vertex'] = numpy.zeros((Nx*Ny*Nz, 3))
@@ -34,7 +34,8 @@ class BiPyramid(object):
                     
         self.allPointsDict['allPoints'] = allPoints[:point_counter]
         vertex_counter = edge_counter = face_counter = inner_counter = 0
-        for point in allPoints:
+        print "Creating a bipyramid "
+        for point in tqdm(allPoints):
             allNeighbors = numpy.array([
 						[point[0]-dx,point[1],point[2]],
 						[point[0]+dx,point[1],point[2]],
@@ -46,7 +47,7 @@ class BiPyramid(object):
             totalNeighbors = 0
             for neighbor in allNeighbors:
                 _d = numpy.linalg.norm(neighbor - allPoints, axis=1)
-                totalNeighbors += (_d < eps).sum()
+                totalNeighbors += (_d < self.eps).sum()
                         
             if (totalNeighbors == 3):
                 self.allPointsDict['vertex'][vertex_counter] = point
@@ -74,7 +75,8 @@ class BiPyramid(object):
     
     
     def within_bipyramid(self, point):
-        height_from_center = numpy.abs(point[2] - self.center[2])
+        vector_from_center = point - self.center
+        height_from_center = numpy.abs(vector_from_center[2])
         if height_from_center > self.max_height/2.:
             return False
         
@@ -82,17 +84,19 @@ class BiPyramid(object):
         ## decreases as we move away from center
         reduction_factor = (self.max_height - 2*height_from_center) / self.max_height
         
-        # length at this distance from center
-        _length = self.max_length * reduction_factor
-        if numpy.abs(point[0] - self.center[0]) > _length/2.:
+        central_angle = numpy.deg2rad(36)
+        ## _orientation is angle of point from x-axis
+        ## _theta is angle of point from nearest vertex
+        _orientation = numpy.arccos(vector_from_center[0] / numpy.linalg.norm(vector_from_center[:2]))
+        _theta = numpy.abs(_orientation) % (2*central_angle)
+        _extent = self.max_radius * numpy.cos(central_angle) / numpy.cos((central_angle - _theta))
+        _extent *= reduction_factor
+        
+        if (numpy.linalg.norm(point[:2] - self.center[:2]) - _extent) > self.eps:
             return False
             
-        # width at this distance from center
-        _width = self.max_width * reduction_factor
-        if numpy.abs(point[1] - self.center[1]) > _width/2.:
-            return False
-
         return True
+
         
     def visualize(self):
 		#~ fig = plt.figure()
@@ -120,7 +124,7 @@ class BiPyramid(object):
         
  
          
-def interactionPotential(rod1,rod2):
+def interactionPotential(rod1,rod2,only_outer=True):
     U = 0
     conc = 500e-6
     kappa = 1/(0.152/numpy.sqrt(conc)*1e-9)
@@ -130,16 +134,20 @@ def interactionPotential(rod1,rod2):
     eps0 = 81
     kB = 1.38e-23
     T = 300
+    
+    if not only_outer:
+        rod1.weights['inner'] = 1.0
+        rod2.weights['inner'] = 1.0
 
     for key1 in rod1.allPointsDict.keys():
-        if (key1 == 'allPoints'):
+        if key1 == 'allPoints':
             continue
         w1 = rod1.weights[key1]
         if w1 == 0:
             continue
         point1 = rod1.allPointsDict[key1]
         for key2 in rod2.allPointsDict.keys():
-            if (key2 == 'allPoints'):
+            if key2 == 'allPoints':
                 continue
             w2 = rod2.weights[key2]
             if w2 == 0:
@@ -162,18 +170,18 @@ outFile2 = open('interactionPotential_t2t_1bp.dat', 'w')
 outFile1.write("Separation Potential\n")
 outFile2.write("Separation Potential\n")
 
-bp1 = BiPyramid(0,0,0,15,15,50,15,15,50)
+bp1 = BiPyramid(0,0,0,15,60,30,30,60)
 
 print "Side by side"
 for d in tqdm(dList):
-    d_vector = numpy.array([15+d, 0, 0])
+    d_vector = numpy.array([30+d, 0, 0])
     bp2 = bp1.shift(d_vector)
     U =  interactionPotential(bp1,bp2)
     Uside2sideList.append(U)
     outFile1.write("%f %f\n" %(d,U))
 print "Tip to tip"
 for d in tqdm(dList):
-    d_vector = numpy.array([0, 0, 50+d])
+    d_vector = numpy.array([0, 0, 60+d])
     bp2 = bp1.shift(d_vector)
     U = interactionPotential(bp1,bp2)
     Utip2tipList.append(U)
@@ -185,10 +193,10 @@ print "Time for each run = {0} minutes".format((end-start)/(60. * len(dList)))
 
 outFile1.close()
 outFile2.close()
-#ratio1,ratio2 = [],[]
-#for i,j in zip(Uside2sideList,Utip2tipList):
-    #ratio1.append(i/j)
-    #ratio2.append(j/i)
+#~ #ratio1,ratio2 = [],[]
+#~ #for i,j in zip(Uside2sideList,Utip2tipList):
+    #~ #ratio1.append(i/j)
+    #~ #ratio2.append(j/i)
     
 fig = plt.figure(figsize=(4,3))
 ax = fig.add_axes([0,0,1,1])
@@ -199,4 +207,4 @@ ax.set_ylabel('Interaction potential (J)')
 plt.legend(('side to side', 'tip to tip'), frameon=False)
 plt.savefig('InteractionPotentials_bp.png', dpi=300)
 plt.show()
-#~ plt.close()
+plt.close()
