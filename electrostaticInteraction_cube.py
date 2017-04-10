@@ -5,16 +5,13 @@ import time
 from tqdm import tqdm
 import copy
 
-class Sphere(object):
-    def __init__(self,x,y,z,R,Nd):
-        ## make a cuboid first, and remove extra bits from it.
-        L = W = H = R*2
+class Cube(object):
+    def __init__(self,x,y,z,S,Nd):
+        L = W = H = S
         Nx = Ny = Nz = Nd
         dx,dy,dz = 1.0*L/Nx,1.0*W/Ny,1.0*H/Nz
         self.point_size = numpy.linalg.norm([dx,dy,dz])
         
-        self.radius = R
-        self.center = numpy.array([x + R, y + R, z + R])
         
         self.allPointsDict = {}
         self.allPointsDict['vertex'] = numpy.zeros((Nx*Ny*Nz, 3))
@@ -28,13 +25,12 @@ class Sphere(object):
             for j in range(Ny):
                 for k in range(Nz):
                     point = [x+dx/2+i*dx,y+dy/2+j*dy,z+dz/2+k*dz]
-                    if self.within_sphere(point):
-                        allPoints[point_counter] = point
-                        point_counter += 1
+                    allPoints[point_counter] = point
+                    point_counter += 1
                     
         self.allPointsDict['allPoints'] = allPoints[:point_counter]
         vertex_counter = edge_counter = face_counter = inner_counter = 0
-        print "Creating a sphere "
+        print "Creating a cube "
         for point in tqdm(allPoints):
             allNeighbors = numpy.array([
 						[point[0]-dx,point[1],point[2]],
@@ -73,9 +69,6 @@ class Sphere(object):
         self.weights['face'] = 1.0
         self.weights['inner'] = 0.0
         
-    
-    def within_sphere(self, point):
-        return numpy.linalg.norm(self.center - point) <= self.radius
         
     def visualize(self):
         fig = plt.figure()
@@ -152,17 +145,17 @@ start = time.time()
 timeList,dList = [],numpy.concatenate((numpy.linspace(0,10,101),range(11,101)))
 Uside2sideArray = numpy.zeros((len(dList), 2))
 
-outFile1 = open(r'Z:\Geeta-Share\sphere assembly\interaction potential\interactionPotential_spheres.dat', 'w')
+outFile1 = open(r'Z:\Geeta-Share\cubes assembly\interaction potential\interactionPotential_spheres.dat', 'w')
 outFile1.write("Separation Potential\n")
 
 
-sphere1 = Sphere(0,0,0,10,40)
+cube1 = Cube(0,0,0,30,60)
 
-print "Sphere ..."
+print "Cube ..."
 for d in tqdm(dList):
-    d_vector = numpy.array([0,0,20+d])
-    sphere2 = sphere1.shift(d_vector)
-    U,Vdw =  interactionPotential(sphere1, sphere2)
+    d_vector = numpy.array([0,0,30+d])
+    cube2 = cube1.shift(d_vector)
+    U,Vdw =  interactionPotential(cube1, cube2)
     Uside2sideArray[n] = [U,Vdw]
     outFile1.write("%f %f %f\n" %(d,U,Vdw))
 
@@ -182,7 +175,7 @@ ax2.plot(dList, Uside2sideArray[:,1], color='steelblue')
 ax2.set_yscale('log')
 ax2.set_ylabel('Van der waal potential')
 
-plt.xlabel('distance between spheres (nm)')
+plt.xlabel('distance between cubes (nm)')
 plt.tight_layout()
-plt.savefig(r'Z:\Geeta-Share\sphere assembly\interaction potential\InteractionPotentials_sphere.png', dpi=300)
+plt.savefig(r'Z:\Geeta-Share\cubes assembly\interaction potential\InteractionPotentials_sphere.png', dpi=300)
 plt.show()

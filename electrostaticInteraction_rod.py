@@ -168,17 +168,16 @@ def interactionPotential(rod1,rod2,only_outer=True):
     
 
 
-
+start = time.time()
 timeList,dList = [],numpy.concatenate((numpy.linspace(0,10,101),range(11,101)))
 Uside2sideArray, Utip2tipArray = numpy.zeros((len(dList), 2)), numpy.zeros((len(dList), 2))
 
-outFile1 = open('interactionPotential_s2s_rod.dat', 'w')
-outFile2 = open('interactionPotential_t2t_rod.dat', 'w')
+outFile1 = open(r'Z:\Geeta-Share\rod assembly\interaction potential\interactionPotential_s2s_rod.dat', 'w')
+outFile2 = open(r'Z:\Geeta-Share\rod assembly\interaction potential\interactionPotential_t2t_rod.dat', 'w')
 outFile1.write("Separation Potential\n")
 outFile2.write("Separation Potential\n")
 
 rod1 = Rod(0,0,0,5,34,20,20,68)
-start = time.time()
 
 print "Side by side"
 for n,d in tqdm(enumerate(dList)):
@@ -219,5 +218,5 @@ ax2.legend(('side to side', 'tip to tip'), frameon=False)
 
 plt.xlabel('distance between rods (nm)')
 plt.tight_layout()
-plt.savefig('rod_potentials.png', dpi=300)
+plt.savefig(r'Z:\Geeta-Share\bipyramid assembly\interaction potential\rod_potentials.png', dpi=300)
 plt.show()

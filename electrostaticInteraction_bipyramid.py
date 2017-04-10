@@ -5,7 +5,6 @@ import time
 from tqdm import tqdm
 import copy
 
-
 class BiPyramid(object):
     def __init__(self,x,y,z,R,H,Nx,Ny,Nz):
         L = W = 2*R
@@ -142,6 +141,7 @@ def interactionPotential(rod1,rod2,only_outer=True):
     eps0 = 81
     kB = 1.38e-23
     T = 300
+    A = 40e-20
     
     if not only_outer:
         rod1.weights['inner'] = 1.0
@@ -166,34 +166,46 @@ def interactionPotential(rod1,rod2,only_outer=True):
             r = numpy.linalg.norm(distance_vector, axis=-1)*1e-9
             
             U += (i_4PiEps*e**2/(eps0*r) * numpy.exp(-kappa*(r-sigma))/(1+kappa*sigma) / (kB*T)).sum()
+    
+    ## calculation of van der waals potential        
+    points1 = rod1.allPointsDict['allPoints']
+    points2 = rod2.allPointsDict['allPoints']
+    distance_vector = numpy.dstack((numpy.subtract.outer(point1[:,i], point2[:,i]) for i in range(3)))
+    r = numpy.linalg.norm(distance_vector, axis=-1)*1e-9
+    ps = rod1.point_size * 0.49e-9 / numpy.sqrt(3)
+    Vdw = A/6 * ( (2*ps**2 / (r**2 - 4*ps**2) ) +  ( 2*ps**2/r**2 ) +  numpy.log( (r**2 - 4*ps**2 ) / r**2) ).sum()
+    Vdw /= (kB*T)
 
-    return U
+    return U,Vdw
+    
     
 start = time.time()
 timeList,dList = [],numpy.concatenate((numpy.linspace(0,10,101),range(11,101)))
-Uside2sideList,Utip2tipList = [],[]
+Uside2sideArray, Utip2tipArray = numpy.zeros((len(dList), 2)), numpy.zeros((len(dList), 2))
 
-outFile1 = open('interactionPotential_s2s_bp.dat', 'w')
-outFile2 = open('interactionPotential_t2t_bp.dat', 'w')
+outFile1 = open(r'Z:\Geeta-Share\bipyramid assembly\interaction potential\interactionPotential_s2s_bp.dat', 'w')
+outFile2 = open(r'Z:\Geeta-Share\bipyramid assembly\interaction potential\interactionPotential_t2t_bp.dat', 'w')
 outFile1.write("Separation Potential\n")
 outFile2.write("Separation Potential\n")
 
 bp1 = BiPyramid(0,0,0,10,55,40,40,110)
 
 print "Side by side"
-for d in tqdm(dList):
+for n,d in tqdm(enumerate(dList)):
     d_vector = numpy.array([30+d, 0, 0])
     bp2 = bp1.shift(d_vector)
-    U =  interactionPotential(bp1,bp2)
-    Uside2sideList.append(U)
-    outFile1.write("%f %f\n" %(d,U))
+    U,Vdw =  interactionPotential(bp1,bp2)
+    Uside2sideArray[n] = [U,Vdw]
+    outFile1.write("%f %f %f\n" %(d,U,Vdw))
+
 print "Tip to tip"
-for d in tqdm(dList):
-    d_vector = numpy.array([0, 0, 60+d])
+for n,d in tqdm(enumerate(dList)):
+    d_vector = numpy.array([0, 0, 110+d])
     bp2 = bp1.shift(d_vector)
-    U = interactionPotential(bp1,bp2)
-    Utip2tipList.append(U)
-    outFile2.write("%f %f\n" %(d,U))
+    U,Vdw = interactionPotential(bp1,bp2)
+    Utip2tipArray[n] = [U,Vdw]
+    outFile2.write("%f %f %f\n" %(d,U,Vdw))
+
 end = time.time()
 print "Total number of runs = ", 2*len(dList)
 print "Time for full run = {0} minutes".format((end-start) / 60.)
@@ -201,18 +213,21 @@ print "Time for each run = {0} minutes".format((end-start)/(60. * len(dList)))
 
 outFile1.close()
 outFile2.close()
-#~ #ratio1,ratio2 = [],[]
-#~ #for i,j in zip(Uside2sideList,Utip2tipList):
-    #~ #ratio1.append(i/j)
-    #~ #ratio2.append(j/i)
-    
-fig = plt.figure(figsize=(4,3))
-ax = fig.add_axes([0,0,1,1])
-ax.plot(dList,Uside2sideList)
-ax.plot(dList,Utip2tipList)
-ax.set_xlabel('Distance between bipyramids (nm)')
-ax.set_ylabel('Interaction potential (J)')
-plt.legend(('side to side', 'tip to tip'), frameon=False)
-plt.savefig('InteractionPotentials_bp.png', dpi=300)
+
+fig, (ax1, ax2) = plt.subplots(2, figsize=(5,7))
+ax1.plot(dList, Uside2sideArray[:,0], color='steelblue')
+ax1.plot(dList, Utip2tipArray[:,0], color='orangered')
+ax1.set_yscale('log')
+ax1.set_ylabel('Coulomb potential')
+ax1.legend(('side to side', 'tip to tip'), frameon=False)
+
+ax2.plot(dList, Uside2sideArray[:,1], color='steelblue')
+ax2.plot(dList, Utip2tipArray[:,1], color='orangered')
+ax2.set_yscale('log')
+ax2.set_ylabel('Van der waal potential')
+ax2.legend(('side to side', 'tip to tip'), frameon=False)
+
+plt.xlabel('distance between bipyramids (nm)')
+plt.tight_layout()
+plt.savefig(r'Z:\Geeta-Share\bipyramid assembly\interaction potential\bipyramid_potentials.png', dpi=300)
 plt.show()
-plt.close()
