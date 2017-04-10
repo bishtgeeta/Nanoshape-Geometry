@@ -1,6 +1,7 @@
 import numpy
 import mayavi.mlab as maya
 import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 import time
 from tqdm import tqdm
 import copy
@@ -118,7 +119,7 @@ class Rod(object):
 
 
 
-def interactionPotential(rod1,rod2,only_outer=True):
+def interactionPotential(rod1,rod2):
     U = 0
     conc = 500e-6
     kappa = 1/(0.152/numpy.sqrt(conc)*1e-9)
@@ -129,10 +130,6 @@ def interactionPotential(rod1,rod2,only_outer=True):
     kB = 1.38e-23
     T = 300
     A = 40e-20
-    
-    if not only_outer:
-        rod1.weights['inner'] = 1.0
-        rod2.weights['inner'] = 1.0
 
     for key1 in rod1.allPointsDict.keys():
         if key1 == 'allPoints':
@@ -218,5 +215,5 @@ ax2.legend(('side to side', 'tip to tip'), frameon=False)
 
 plt.xlabel('distance between rods (nm)')
 plt.tight_layout()
-plt.savefig(r'Z:\Geeta-Share\bipyramid assembly\interaction potential\rod_potentials.png', dpi=300)
+plt.savefig(r'Z:\Geeta-Share\rod assembly\interaction potential\rod_potentials.png', dpi=300)
 plt.show()

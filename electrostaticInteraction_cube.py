@@ -92,7 +92,7 @@ class Cube(object):
         return new
  
          
-def interactionPotential(rod1,rod2,only_outer=True):
+def interactionPotential(rod1,rod2):
     U = 0
     conc = 500e-6
     kappa = 1/(0.152/numpy.sqrt(conc)*1e-9)
@@ -103,10 +103,6 @@ def interactionPotential(rod1,rod2,only_outer=True):
     kB = 1.38e-23
     T = 300
     A = 40e-20
-    
-    if not only_outer:
-        rod1.weights['inner'] = 1.0
-        rod2.weights['inner'] = 1.0
 
     for key1 in rod1.allPointsDict.keys():
         if (key1 == 'allPoints'):
@@ -152,7 +148,7 @@ outFile1.write("Separation Potential\n")
 cube1 = Cube(0,0,0,30,60)
 
 print "Cube ..."
-for d in tqdm(dList):
+for n,d in tqdm(enumerate(dList)):
     d_vector = numpy.array([0,0,30+d])
     cube2 = cube1.shift(d_vector)
     U,Vdw =  interactionPotential(cube1, cube2)
