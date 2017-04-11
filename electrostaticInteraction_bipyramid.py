@@ -187,7 +187,7 @@ bp1 = BiPyramid(0,0,0,10,55,40,40,110)
 
 print "Side by side"
 for n,d in tqdm(enumerate(dList)):
-    d_vector = numpy.array([30+d, 0, 0])
+    d_vector = numpy.array([10*(1 + numpy.cos(numpy.deg2rad(36))) + d, 0, 0])
     bp2 = bp1.shift(d_vector)
     U,Vdw =  interactionPotential(bp1,bp2)
     Uside2sideArray[n] = [U,Vdw]

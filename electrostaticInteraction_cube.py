@@ -173,5 +173,5 @@ ax2.set_ylabel('Van der waal potential')
 
 plt.xlabel('distance between cubes (nm)')
 plt.tight_layout()
-plt.savefig(r'Z:\Geeta-Share\cubes assembly\interaction potential\InteractionPotentials_sphere.png', dpi=300)
+plt.savefig(r'Z:\Geeta-Share\cubes assembly\interaction potential\InteractionPotentials_cube.png', dpi=300)
 plt.show()
