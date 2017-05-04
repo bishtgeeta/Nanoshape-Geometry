@@ -49,7 +49,7 @@ class BiPyramid(object):
                 _d = numpy.linalg.norm(neighbor - allPoints, axis=1)
                 totalNeighbors += (_d < self.point_size*1e-2).sum()
                         
-            if (totalNeighbors == 3):
+            if (totalNeighbors <= 3):
                 self.allPointsDict['vertex'][vertex_counter] = point
                 vertex_counter += 1
             elif (totalNeighbors == 4):
@@ -134,7 +134,9 @@ def interactionPotential(rod1,rod2):
     U = 0
     conc = 500e-6
     kappa = 1/(0.152/numpy.sqrt(conc)*1e-9)
-    sigma = 5e-9
+    sigma = rod1.point_size / numpy.sqrt(3)  ## ASSUMPTION : dx, dy, dz are equal
+                                             ## for comparision with sphere, anyway
+                                             ## dx, dy, dz should be equal
     e = 1.6e-19
     i_4PiEps = 9e9
     eps0 = 81
@@ -167,7 +169,7 @@ def interactionPotential(rod1,rod2):
     points2 = rod2.allPointsDict['allPoints']
     distance_vector = numpy.dstack((numpy.subtract.outer(point1[:,i], point2[:,i]) for i in range(3)))
     r = numpy.linalg.norm(distance_vector, axis=-1)*1e-9
-    ps = rod1.point_size * 0.49e-9 / numpy.sqrt(3)
+    ps = sigma * 0.49e-9
     Vdw = A/6 * ( (2*ps**2 / (r**2 - 4*ps**2) ) +  ( 2*ps**2/r**2 ) +  numpy.log( (r**2 - 4*ps**2 ) / r**2) ).sum()
     Vdw /= (kB*T)
 
@@ -226,3 +228,18 @@ plt.xlabel('distance between bipyramids (nm)')
 plt.tight_layout()
 plt.savefig(r'Z:\Geeta-Share\bipyramid assembly\interaction potential\bipyramid_potentials.png', dpi=300)
 plt.show()
+
+
+print "number of points in bp1 :"
+for key, value in in bp1.allPointsDict.items():
+    print key, value.shape[0]
+ 
+    
+#### will print 
+## number of points in bp1 :
+## inner, 900
+## vertex, 100
+## 
+
+
+## print bp1.allPointsDict['vertex'].shape[0] + bp1.allPointsDict['inner'].shape[0] + bp1.allPointsDict['face'].shape[0]
