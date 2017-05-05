@@ -132,6 +132,7 @@ def interactionPotential(rod1,rod2):
     ps = rod1.point_size * 0.49e-9 / numpy.sqrt(3)
     Vdw = A/6 * ( (2*ps**2 / (r**2 - 4*ps**2) ) +  ( 2*ps**2/r**2 ) +  numpy.log( (r**2 - 4*ps**2 ) / r**2) ).sum()
     Vdw /= (kB*T)
+    print r.min()
 
     return U,Vdw
     

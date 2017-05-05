@@ -89,7 +89,7 @@ class Sphere(object):
         xo,yo,zo = outer_points.T
         ax.scatter(xi,yi,zi,color='steelblue')
         ax.scatter(xo,yo,zo,color='orangered', c='orangered')
-        plt.show()
+        plt.savefig(r'Z:\Geeta-Share\sphere assembly\interaction potential\sphere_geometry(final-1nm).png', dpi=300)
 
     def shift(self, d):
         new = copy.deepcopy(self)
@@ -101,9 +101,11 @@ class Sphere(object):
          
 def interactionPotential(rod1,rod2):
     U = 0
-    conc = 500e-6
-    kappa = 1/(0.152/numpy.sqrt(conc)*1e-9)
-    sigma = 5e-9
+    conc = 1e-3
+    kappa = 1/(0.304/numpy.sqrt(conc)*1e-9)
+    sigma = rod1.point_size*1e-9 / numpy.sqrt(3)  ## ASSUMPTION : dx, dy, dz are equal
+                                             ## for comparision with sphere, anyway
+                                             ## dx, dy, dz should be equal
     e = 1.6e-19
     i_4PiEps = 9e9
     eps0 = 81
@@ -136,9 +138,10 @@ def interactionPotential(rod1,rod2):
     points2 = rod2.allPointsDict['allPoints']
     distance_vector = numpy.dstack((numpy.subtract.outer(point1[:,i], point2[:,i]) for i in range(3)))
     r = numpy.linalg.norm(distance_vector, axis=-1)*1e-9
-    ps = rod1.point_size * 0.49e-9 / numpy.sqrt(3)
+    ps = sigma * 0.49
     Vdw = A/6 * ( (2*ps**2 / (r**2 - 4*ps**2) ) +  ( 2*ps**2/r**2 ) +  numpy.log( (r**2 - 4*ps**2 ) / r**2) ).sum()
     Vdw /= (kB*T)
+    print r.min()
 
     return U,Vdw
     
@@ -148,11 +151,11 @@ start = time.time()
 timeList,dList = [],numpy.concatenate((numpy.linspace(0,10,101),range(11,101)))
 Uside2sideArray = numpy.zeros((len(dList), 2))
 
-outFile1 = open(r'Z:\Geeta-Share\sphere assembly\interaction potential\interactionPotential_spheres.dat', 'w')
+outFile1 = open(r'Z:\Geeta-Share\sphere assembly\interaction potential\interactionPotential_spheres(final-1nm).dat', 'w')
 outFile1.write("Separation Potential\n")
 
 
-sphere1 = Sphere(0,0,0,10,40)
+sphere1 = Sphere(0,0,0,10,20)
 
 print "Sphere ..."
 for n,d in tqdm(enumerate(dList)):
@@ -160,7 +163,7 @@ for n,d in tqdm(enumerate(dList)):
     sphere2 = sphere1.shift(d_vector)
     U,Vdw =  interactionPotential(sphere1, sphere2)
     Uside2sideArray[n] = [U,Vdw]
-    outFile1.write("%f %f %f\n" %(d,U,Vdw))
+    outFile1.write("%f %.18e %.18e\n" %(d,U,Vdw))
 
 end = time.time()
 print "Total number of runs = ", len(dList)
@@ -180,5 +183,12 @@ ax2.set_ylabel('Van der waal potential')
 
 plt.xlabel('distance between spheres (nm)')
 plt.tight_layout()
-plt.savefig(r'Z:\Geeta-Share\sphere assembly\interaction potential\InteractionPotentials_sphere.png', dpi=300)
+plt.savefig(r'Z:\Geeta-Share\sphere assembly\interaction potential\InteractionPotentials_sphere(final-1nm).png', dpi=300)
+sphere1.visualize()
 plt.show()
+
+print "number of points in sphere :"
+for key, value in sphere1.allPointsDict.items():
+    print key, value.shape[0]
+ 
+print sphere1.allPointsDict['vertex'].shape[0] + sphere1.allPointsDict['edge'].shape[0] + sphere1.allPointsDict['face'].shape[0]
