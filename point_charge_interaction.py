@@ -21,24 +21,27 @@ T = 300
 A = 40e-20    
 ps = 0.5e-9
 sigma = 2*ps
-distances = numpy.linspace(2*ps + 1e-10, 10e-9, 100)
+distances = numpy.linspace(2*ps + 1e-10, 20e-9, 100)
 
-vdw_potentials = []
-coulomb_potentials = []
+Vdw = []
+U = []
 for r in distances:
-    vdw_potentials.append(calculate_van_der_waal(A, ps ,r))
-    coulomb_potentials.append(calculate_coulombpotential(r))
+    Vdw.append(calculate_van_der_waal(A, ps ,r))
+    U.append(calculate_coulombpotential(r))
+    
+results = numpy.column_stack((distances, U, Vdw))
+numpy.savetxt(r'Z:\Geeta-Share\point charge potential\point_charge.txt', results, header='distance, coloumb, van der waal', delimiter= '  ')
 
 plt.figure()    
-plt.plot(distances * 1e9, vdw_potentials)
+plt.plot(distances * 1e9, Vdw)
 plt.yscale('log')
 plt.ylabel('van der waal energy (kBT)')
 plt.xlabel('distance between point particles (nm)')
-plt.savefig('vdw.png', dpi=300)
+plt.savefig(r'Z:\Geeta-Share\point charge potential\vdw.png', dpi=300)
 
 plt.figure()
-plt.plot(distances * 1e9, coulomb_potentials)
+plt.plot(distances * 1e9, U)
 plt.yscale('log')
 plt.ylabel('coloumb energy (kBT)')
 plt.xlabel('distance between point particles (nm)')
-plt.savefig('coloumb.png', dpi=300)
+plt.savefig(r'Z:\Geeta-Share\point charge potential\coulomb.png', dpi=300)

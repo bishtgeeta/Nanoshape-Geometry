@@ -35,7 +35,7 @@ class Sphere(object):
         self.allPointsDict['allPoints'] = allPoints[:point_counter]
         vertex_counter = edge_counter = face_counter = inner_counter = 0
         print "Creating a sphere "
-        for point in tqdm(allPoints):
+        for point in tqdm(allPoints[:point_counter]):
             allNeighbors = numpy.array([
 						[point[0]-dx,point[1],point[2]],
 						[point[0]+dx,point[1],point[2]],
@@ -46,10 +46,10 @@ class Sphere(object):
 						])
             totalNeighbors = 0
             for neighbor in allNeighbors:
-                _d = numpy.linalg.norm(neighbor - allPoints, axis=1)
+                _d = numpy.linalg.norm(neighbor - allPoints[:point_counter], axis=1)
                 totalNeighbors += (_d < self.point_size*1e-2).sum()
                         
-            if (totalNeighbors == 3):
+            if (totalNeighbors <= 3):
                 self.allPointsDict['vertex'][vertex_counter] = point
                 vertex_counter += 1
             elif (totalNeighbors == 4):

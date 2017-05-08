@@ -34,7 +34,7 @@ class Rod(object):
         self.allPointsDict['allPoints'] = allPoints[:point_counter]
         vertex_counter = edge_counter = face_counter = inner_counter = 0
         print "Creating a rod "
-        for point in tqdm(allPoints):
+        for point in tqdm(allPoints[:point_counter]):
             allNeighbors = numpy.array([
 						[point[0]-dx,point[1],point[2]],
 						[point[0]+dx,point[1],point[2]],
@@ -45,7 +45,7 @@ class Rod(object):
 						])
             totalNeighbors = 0
             for neighbor in allNeighbors:
-                _d = numpy.linalg.norm(neighbor - allPoints, axis=1)
+                _d = numpy.linalg.norm(neighbor - allPoints[:point_counter], axis=1)
                 totalNeighbors += (_d < self.point_size*1e-2).sum()
                         
             if (totalNeighbors == 3):
@@ -219,3 +219,9 @@ plt.tight_layout()
 plt.savefig(r'Z:\Geeta-Share\rod assembly\interaction potential\rod_potentials(final-1nm).png', dpi=300)
 rod1.visualize()
 plt.show()
+
+print "number of points in bp1 :"
+for key, value in rod1.allPointsDict.items():
+    print key, value.shape[0]
+ 
+print rod1.allPointsDict['vertex'].shape[0] + rod1.allPointsDict['edge'].shape[0] + rod1.allPointsDict['face'].shape[0]
