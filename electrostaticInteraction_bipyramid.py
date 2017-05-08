@@ -187,9 +187,13 @@ outFile2.write("Separation Potential\n")
 
 bp1 = BiPyramid(0,0,0,10,55,20,20,55)
 
+x_extent = bp1.allPointsDict['allPoints'].max(axis=0)[0] - bp1.allPointsDict['allPoints'].min(axis=0)[0] + 1
+z_extent = bp1.allPointsDict['allPoints'].max(axis=0)[2] - bp1.allPointsDict['allPoints'].min(axis=0)[2] + 1
+## TODO - add x_extent, y_extent, and z_extent as attributes within the class
+
 print "Side by side"
 for n,d in tqdm(enumerate(dList)):
-    d_vector = numpy.array([10*(1 + numpy.cos(numpy.deg2rad(36))) + d, 0, 0])
+    d_vector = numpy.array([x_extent + d, 0, 0])
     bp2 = bp1.shift(d_vector)
     U,Vdw =  interactionPotential(bp1,bp2)
     Uside2sideArray[n] = [U,Vdw]
@@ -197,7 +201,7 @@ for n,d in tqdm(enumerate(dList)):
 
 print "Tip to tip"
 for n,d in tqdm(enumerate(dList)):
-    d_vector = numpy.array([0, 0, 55+d])
+    d_vector = numpy.array([0, 0, z_extent + d])
     bp2 = bp1.shift(d_vector)
     U,Vdw = interactionPotential(bp1,bp2)
     Utip2tipArray[n] = [U,Vdw]
