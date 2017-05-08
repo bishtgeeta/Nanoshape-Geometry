@@ -31,7 +31,7 @@ class Cube(object):
         self.allPointsDict['allPoints'] = allPoints[:point_counter]
         vertex_counter = edge_counter = face_counter = inner_counter = 0
         print "Creating a cube "
-        for point in tqdm(allPoints):
+        for point in tqdm(allPoints[:point_counter]):
             allNeighbors = numpy.array([
 						[point[0]-dx,point[1],point[2]],
 						[point[0]+dx,point[1],point[2]],
@@ -42,10 +42,10 @@ class Cube(object):
 						])
             totalNeighbors = 0
             for neighbor in allNeighbors:
-                _d = numpy.linalg.norm(neighbor - allPoints, axis=1)
+                _d = numpy.linalg.norm(neighbor - allPoints[:point_counter], axis=1)
                 totalNeighbors += (_d < self.point_size*1e-2).sum()
                         
-            if (totalNeighbors == 3):
+            if (totalNeighbors <= 3):
                 self.allPointsDict['vertex'][vertex_counter] = point
                 vertex_counter += 1
             elif (totalNeighbors == 4):
@@ -82,7 +82,7 @@ class Cube(object):
         xo,yo,zo = outer_points.T
         ax.scatter(xi,yi,zi,color='steelblue')
         ax.scatter(xo,yo,zo,color='orangered', c='orangered')
-        plt.show()
+        plt.savefig(r'Z:\Geeta-Share\cubes assembly\interaction potential\cube_geometry(final-1nm).png', dpi=300)
 
     def shift(self, d):
         new = copy.deepcopy(self)
@@ -94,9 +94,11 @@ class Cube(object):
          
 def interactionPotential(rod1,rod2):
     U = 0
-    conc = 500e-6
-    kappa = 1/(0.152/numpy.sqrt(conc)*1e-9)
-    sigma = 5e-9
+    conc = 1e-3
+    kappa = 1/(0.304/numpy.sqrt(conc)*1e-9)
+    sigma = rod1.point_size*1e-9 / numpy.sqrt(3)  ## ASSUMPTION : dx, dy, dz are equal
+                                             ## for comparision with sphere, anyway
+                                             ## dx, dy, dz should be equal
     e = 1.6e-19
     i_4PiEps = 9e9
     eps0 = 81
@@ -129,7 +131,7 @@ def interactionPotential(rod1,rod2):
     points2 = rod2.allPointsDict['allPoints']
     distance_vector = numpy.dstack((numpy.subtract.outer(point1[:,i], point2[:,i]) for i in range(3)))
     r = numpy.linalg.norm(distance_vector, axis=-1)*1e-9
-    ps = rod1.point_size * 0.49e-9 / numpy.sqrt(3)
+    ps = sigma * 0.49
     Vdw = A/6 * ( (2*ps**2 / (r**2 - 4*ps**2) ) +  ( 2*ps**2/r**2 ) +  numpy.log( (r**2 - 4*ps**2 ) / r**2) ).sum()
     Vdw /= (kB*T)
     print r.min()
@@ -142,11 +144,11 @@ start = time.time()
 timeList,dList = [],numpy.concatenate((numpy.linspace(0,10,101),range(11,101)))
 Uside2sideArray = numpy.zeros((len(dList), 2))
 
-outFile1 = open(r'Z:\Geeta-Share\cubes assembly\interaction potential\interactionPotential_spheres.dat', 'w')
+outFile1 = open(r'Z:\Geeta-Share\cubes assembly\interaction potential\interactionPotential_cube(final-1nm).dat', 'w')
 outFile1.write("Separation Potential\n")
 
 
-cube1 = Cube(0,0,0,30,60)
+cube1 = Cube(0,0,0,30,30)
 
 print "Cube ..."
 for n,d in tqdm(enumerate(dList)):
@@ -154,7 +156,7 @@ for n,d in tqdm(enumerate(dList)):
     cube2 = cube1.shift(d_vector)
     U,Vdw =  interactionPotential(cube1, cube2)
     Uside2sideArray[n] = [U,Vdw]
-    outFile1.write("%f %f %f\n" %(d,U,Vdw))
+    outFile1.write("%f %.18e %.18e\n" %(d,U,Vdw))
 
 end = time.time()
 print "Total number of runs = ", len(dList)
@@ -174,5 +176,12 @@ ax2.set_ylabel('Van der waal potential')
 
 plt.xlabel('distance between cubes (nm)')
 plt.tight_layout()
-plt.savefig(r'Z:\Geeta-Share\cubes assembly\interaction potential\InteractionPotentials_cube.png', dpi=300)
+plt.savefig(r'Z:\Geeta-Share\cubes assembly\interaction potential\InteractionPotentials_cube(final-1nm).png', dpi=300)
+cube1.visualize()
 plt.show()
+
+print "number of points in cube1 :"
+for key, value in cube1.allPointsDict.items():
+    print key, value.shape[0]
+ 
+print cube1.allPointsDict['vertex'].shape[0] + cube1.allPointsDict['edge'].shape[0] + cube1.allPointsDict['face'].shape[0]

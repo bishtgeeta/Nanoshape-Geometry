@@ -48,7 +48,7 @@ class Rod(object):
                 _d = numpy.linalg.norm(neighbor - allPoints[:point_counter], axis=1)
                 totalNeighbors += (_d < self.point_size*1e-2).sum()
                         
-            if (totalNeighbors == 3):
+            if (totalNeighbors <= 3):
                 self.allPointsDict['vertex'][vertex_counter] = point
                 vertex_counter += 1
             elif (totalNeighbors == 4):
@@ -220,7 +220,7 @@ plt.savefig(r'Z:\Geeta-Share\rod assembly\interaction potential\rod_potentials(f
 rod1.visualize()
 plt.show()
 
-print "number of points in bp1 :"
+print "number of points in rod1 :"
 for key, value in rod1.allPointsDict.items():
     print key, value.shape[0]
  

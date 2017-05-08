@@ -187,7 +187,7 @@ plt.savefig(r'Z:\Geeta-Share\sphere assembly\interaction potential\InteractionPo
 sphere1.visualize()
 plt.show()
 
-print "number of points in sphere :"
+print "number of points in sphere1:"
 for key, value in sphere1.allPointsDict.items():
     print key, value.shape[0]
  
