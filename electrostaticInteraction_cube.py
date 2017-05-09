@@ -9,7 +9,7 @@ class Cube(object):
     def __init__(self,x,y,z,S,mesh_size):
         L = W = H = S
         Nx = Ny = Nz = int(S / mesh_size)
-        dx,dy,dz = 1.0*L/Nx,1.0*W/Ny,1.0*H/Nz
+        dx,dy,dz = mesh_size
         self.mesh_size = mesh_size
         self.center = numpy.array([x + L/2., y + W/2., z + H/2.])
         

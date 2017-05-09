@@ -10,7 +10,7 @@ class Sphere(object):
         ## make a cuboid first, and remove extra bits from it.
         L = W = H = R*2
         Nx = Ny = Nz = int(R*2 / mesh_size)
-        dx,dy,dz = 1.0*L/Nx,1.0*W/Ny,1.0*H/Nz
+        dx,dy,dz = mesh_size
         self.mesh_size = mesh_size
         
         self.radius = R
