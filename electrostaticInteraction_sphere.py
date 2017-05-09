@@ -6,12 +6,12 @@ from tqdm import tqdm
 import copy
 
 class Sphere(object):
-    def __init__(self,x,y,z,R,Nd):
+    def __init__(self,x,y,z,R,mesh_size):
         ## make a cuboid first, and remove extra bits from it.
         L = W = H = R*2
-        Nx = Ny = Nz = Nd
+        Nx = Ny = Nz = int(R*2 / mesh_size)
         dx,dy,dz = 1.0*L/Nx,1.0*W/Ny,1.0*H/Nz
-        self.point_size = numpy.linalg.norm([dx,dy,dz])
+        self.mesh_size = mesh_size
         
         self.radius = R
         self.center = numpy.array([x + R, y + R, z + R])
@@ -32,7 +32,10 @@ class Sphere(object):
                         allPoints[point_counter] = point
                         point_counter += 1
                     
-        self.allPointsDict['allPoints'] = allPoints[:point_counter]
+        allPoints = allPoints[:point_counter] 
+        self.allPointsDict['allPoints'] = allPoints
+        self.x_extent, self.y_extent, self.z_extent = allPoints.max(axis=0) - allPoints.min(axis=0) + self.mesh_size
+        
         vertex_counter = edge_counter = face_counter = inner_counter = 0
         print "Creating a sphere "
         for point in tqdm(allPoints[:point_counter]):
@@ -47,7 +50,7 @@ class Sphere(object):
             totalNeighbors = 0
             for neighbor in allNeighbors:
                 _d = numpy.linalg.norm(neighbor - allPoints[:point_counter], axis=1)
-                totalNeighbors += (_d < self.point_size*1e-2).sum()
+                totalNeighbors += (_d < self.mesh_size*1e-2).sum()
                         
             if (totalNeighbors <= 3):
                 self.allPointsDict['vertex'][vertex_counter] = point
@@ -103,9 +106,8 @@ def interactionPotential(rod1,rod2):
     U = 0
     conc = 1e-3
     kappa = 1/(0.304/numpy.sqrt(conc)*1e-9)
-    sigma = rod1.point_size*1e-9 / numpy.sqrt(3)  ## ASSUMPTION : dx, dy, dz are equal
-                                             ## for comparision with sphere, anyway
-                                             ## dx, dy, dz should be equal
+    sigma = rod1.mesh_size*1e-9  ## dx, dy, dz are equal to mesh_size
+
     e = 1.6e-19
     i_4PiEps = 9e9
     eps0 = 81
@@ -154,12 +156,14 @@ Uside2sideArray = numpy.zeros((len(dList), 2))
 outFile1 = open(r'Z:\Geeta-Share\sphere assembly\interaction potential\interactionPotential_spheres(final-0.5nm).dat', 'w')
 outFile1.write("Separation Potential\n")
 
-
-sphere1 = Sphere(0,0,0,10,40)
+mesh_size = 1
+sphere1 = Sphere(0,0,0,10,mesh_size)
+x_extent = sphere1.x_extent
+z_extent = sphere1.z_extent
 
 print "Sphere ..."
 for n,d in tqdm(enumerate(dList)):
-    d_vector = numpy.array([0,0,20+d])
+    d_vector = numpy.array([0,0,z_extent + d])
     sphere2 = sphere1.shift(d_vector)
     U,Vdw =  interactionPotential(sphere1, sphere2)
     Uside2sideArray[n] = [U,Vdw]

@@ -6,10 +6,13 @@ from tqdm import tqdm
 import copy
 
 class Rod(object):
-    def __init__(self,x,y,z,R,H,Nx,Ny,Nz):
+    def __init__(self,x,y,z,R,H,mesh_size):
         L = W = 2*R
-        dx,dy,dz = 1.0*L/Nx, 1.0*W/Ny, 1.0*H/Nz
-        self.point_size = numpy.linalg.norm([dx,dy,dz])
+        dx = dy = dz = mesh_size
+        Nx = int(L / mesh_size)
+        Ny = int(W / mesh_size)
+        Nz = int(H / mesh_size)
+        self.mesh_size = mesh_size
         
         self.center = numpy.array([x + L/2., y + W/2., z + H/2.])
         self.max_height = H
@@ -31,10 +34,13 @@ class Rod(object):
                         allPoints[point_counter] = point
                         point_counter += 1
                     
-        self.allPointsDict['allPoints'] = allPoints[:point_counter]
+        allPoints = allPoints[:point_counter] 
+        self.allPointsDict['allPoints'] = allPoints
+        self.x_extent, self.y_extent, self.z_extent = allPoints.max(axis=0) - allPoints.min(axis=0) + self.mesh_size
+        
         vertex_counter = edge_counter = face_counter = inner_counter = 0
         print "Creating a rod "
-        for point in tqdm(allPoints[:point_counter]):
+        for point in tqdm(allPoints):
             allNeighbors = numpy.array([
 						[point[0]-dx,point[1],point[2]],
 						[point[0]+dx,point[1],point[2]],
@@ -45,8 +51,8 @@ class Rod(object):
 						])
             totalNeighbors = 0
             for neighbor in allNeighbors:
-                _d = numpy.linalg.norm(neighbor - allPoints[:point_counter], axis=1)
-                totalNeighbors += (_d < self.point_size*1e-2).sum()
+                _d = numpy.linalg.norm(neighbor - allPoints, axis=1)
+                totalNeighbors += (_d < self.mesh_size*1e-2).sum()
                         
             if (totalNeighbors <= 3):
                 self.allPointsDict['vertex'][vertex_counter] = point
@@ -79,7 +85,7 @@ class Rod(object):
         if height_from_center > self.max_height/2.:
             return False
         
-        if (numpy.linalg.norm(vector_from_center[:2]) - self.radius > self.point_size*1e-2):
+        if (numpy.linalg.norm(vector_from_center[:2]) - self.radius > self.mesh_size*1e-2):
             return False
             
         return True
@@ -111,6 +117,7 @@ class Rod(object):
              
     def shift(self, d):
         new = copy.deepcopy(self)
+        new.center = new.center + d
         for key in new.allPointsDict.keys():
             new.allPointsDict[key] = new.allPointsDict[key] + d
         
@@ -122,9 +129,8 @@ def interactionPotential(rod1,rod2):
     U = 0
     conc = 1e-3
     kappa = 1/(0.304/numpy.sqrt(conc)*1e-9)
-    sigma = rod1.point_size*1e-9 / numpy.sqrt(3)  ## ASSUMPTION : dx, dy, dz are equal
-                                             ## for comparision with sphere, anyway
-                                             ## dx, dy, dz should be equal
+    sigma = rod1.mesh_size*1e-9 ## dx, dy, dz are equal to mesh_size
+    
     e = 1.6e-19
     i_4PiEps = 9e9
     eps0 = 81
@@ -161,6 +167,7 @@ def interactionPotential(rod1,rod2):
     Vdw = A/6 * ( (2*ps**2 / (r**2 - 4*ps**2) ) +  ( 2*ps**2/r**2 ) +  numpy.log( (r**2 - 4*ps**2 ) / r**2) ).sum()
     Vdw /= (kB*T)
     print r.min()
+    
     return U,Vdw
     
     
@@ -175,11 +182,14 @@ outFile2 = open(r'Z:\Geeta-Share\rod assembly\interaction potential\interactionP
 outFile1.write("Separation Potential\n")
 outFile2.write("Separation Potential\n")
 
-rod1 = Rod(0,0,0,5,34,20,20,68)
+mesh_size = 0.5
+rod1 = Rod(0,0,0,5,34,mesh_size)
+x_extent = rod1.x_extent
+z_extent = rod1.z_extent
 
 print "Side by side"
 for n,d in tqdm(enumerate(dList)):
-    d_vector = numpy.array([10+d, 0, 0])
+    d_vector = numpy.array([x_extent + d, 0, 0])
     rod2 = rod1.shift(d_vector)
     U,Vdw = interactionPotential(rod1,rod2)
     Uside2sideArray[n] = [U,Vdw]
@@ -187,7 +197,7 @@ for n,d in tqdm(enumerate(dList)):
 
 print "Tip to tip"
 for n,d in tqdm(enumerate(dList)):
-    d_vector = numpy.array([0, 0, 34+d])
+    d_vector = numpy.array([0, 0, z_extent + d])
     rod2 = rod1.shift(d_vector)
     U,Vdw = interactionPotential(rod1,rod2)
     Utip2tipArray[n] = [U,Vdw]

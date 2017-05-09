@@ -6,12 +6,12 @@ from tqdm import tqdm
 import copy
 
 class Cube(object):
-    def __init__(self,x,y,z,S,Nd):
+    def __init__(self,x,y,z,S,mesh_size):
         L = W = H = S
-        Nx = Ny = Nz = Nd
+        Nx = Ny = Nz = int(S / mesh_size)
         dx,dy,dz = 1.0*L/Nx,1.0*W/Ny,1.0*H/Nz
-        self.point_size = numpy.linalg.norm([dx,dy,dz])
-        
+        self.mesh_size = mesh_size
+        self.center = numpy.array([x + L/2., y + W/2., z + H/2.])
         
         self.allPointsDict = {}
         self.allPointsDict['vertex'] = numpy.zeros((Nx*Ny*Nz, 3))
@@ -28,10 +28,13 @@ class Cube(object):
                     allPoints[point_counter] = point
                     point_counter += 1
                     
-        self.allPointsDict['allPoints'] = allPoints[:point_counter]
+        allPoints = allPoints[:point_counter] 
+        self.allPointsDict['allPoints'] = allPoints
+        self.x_extent, self.y_extent, self.z_extent = allPoints.max(axis=0) - allPoints.min(axis=0) + self.mesh_size
+        
         vertex_counter = edge_counter = face_counter = inner_counter = 0
         print "Creating a cube "
-        for point in tqdm(allPoints[:point_counter]):
+        for point in tqdm(allPoints):
             allNeighbors = numpy.array([
 						[point[0]-dx,point[1],point[2]],
 						[point[0]+dx,point[1],point[2]],
@@ -42,8 +45,8 @@ class Cube(object):
 						])
             totalNeighbors = 0
             for neighbor in allNeighbors:
-                _d = numpy.linalg.norm(neighbor - allPoints[:point_counter], axis=1)
-                totalNeighbors += (_d < self.point_size*1e-2).sum()
+                _d = numpy.linalg.norm(neighbor - allPoints, axis=1)
+                totalNeighbors += (_d < self.mesh_size*1e-2).sum()
                         
             if (totalNeighbors <= 3):
                 self.allPointsDict['vertex'][vertex_counter] = point
@@ -86,6 +89,7 @@ class Cube(object):
 
     def shift(self, d):
         new = copy.deepcopy(self)
+        new.center = new.center + d
         for key in new.allPointsDict.keys():
             new.allPointsDict[key] = new.allPointsDict[key] + d
         
@@ -96,9 +100,8 @@ def interactionPotential(rod1,rod2):
     U = 0
     conc = 1e-3
     kappa = 1/(0.304/numpy.sqrt(conc)*1e-9)
-    sigma = rod1.point_size*1e-9 / numpy.sqrt(3)  ## ASSUMPTION : dx, dy, dz are equal
-                                             ## for comparision with sphere, anyway
-                                             ## dx, dy, dz should be equal
+    sigma = rod1.mesh_size*1e-9  ## dx, dy, dz are equal to mesh_size
+    
     e = 1.6e-19
     i_4PiEps = 9e9
     eps0 = 81
@@ -147,12 +150,14 @@ Uside2sideArray = numpy.zeros((len(dList), 2))
 outFile1 = open(r'Z:\Geeta-Share\cubes assembly\interaction potential\interactionPotential_cube(final-0.5nm).dat', 'w')
 outFile1.write("Separation Potential\n")
 
-
-cube1 = Cube(0,0,0,30,60)
+mesh_size = 1
+cube1 = Cube(0,0,0,30,mesh_size)
+x_extent = cube1.x_extent
+z_extent = cube1.z_extent
 
 print "Cube ..."
 for n,d in tqdm(enumerate(dList)):
-    d_vector = numpy.array([0,0,30+d])
+    d_vector = numpy.array([0,0,z_extent + d])
     cube2 = cube1.shift(d_vector)
     U,Vdw =  interactionPotential(cube1, cube2)
     Uside2sideArray[n] = [U,Vdw]
