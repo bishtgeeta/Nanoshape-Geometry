@@ -107,7 +107,7 @@ class Rod(object):
         xo,yo,zo = outer_points.T
         ax.scatter(xi,yi,zi,color='steelblue')
         ax.scatter(xo,yo,zo,color='orangered', c='orangered')
-        plt.savefig(r'Z:\Geeta-Share\rod assembly\interaction potential\rod_geometry(final-1nm).png', dpi=300)
+        plt.savefig(r'Z:\Geeta-Share\rod assembly\interaction potential\rod_geometry(final-0.5nm).png', dpi=300)
              
     def shift(self, d):
         new = copy.deepcopy(self)
@@ -155,7 +155,7 @@ def interactionPotential(rod1,rod2):
     ## calculation of van der waals potential        
     points1 = rod1.allPointsDict['allPoints']
     points2 = rod2.allPointsDict['allPoints']
-    distance_vector = numpy.dstack((numpy.subtract.outer(point1[:,i], point2[:,i]) for i in range(3)))
+    distance_vector = numpy.dstack((numpy.subtract.outer(points1[:,i], points2[:,i]) for i in range(3)))
     r = numpy.linalg.norm(distance_vector, axis=-1)*1e-9
     ps = sigma * 0.49
     Vdw = A/6 * ( (2*ps**2 / (r**2 - 4*ps**2) ) +  ( 2*ps**2/r**2 ) +  numpy.log( (r**2 - 4*ps**2 ) / r**2) ).sum()
@@ -170,12 +170,12 @@ start = time.time()
 timeList,dList = [],numpy.concatenate((numpy.linspace(0,10,101),range(11,101)))
 Uside2sideArray, Utip2tipArray = numpy.zeros((len(dList), 2)), numpy.zeros((len(dList), 2))
 
-outFile1 = open(r'Z:\Geeta-Share\rod assembly\interaction potential\interactionPotential_s2s_rod(final-1nm).dat', 'w')
-outFile2 = open(r'Z:\Geeta-Share\rod assembly\interaction potential\interactionPotential_t2t_rod(final-1nm).dat', 'w')
+outFile1 = open(r'Z:\Geeta-Share\rod assembly\interaction potential\interactionPotential_s2s_rod(final-0.5nm).dat', 'w')
+outFile2 = open(r'Z:\Geeta-Share\rod assembly\interaction potential\interactionPotential_t2t_rod(final-0.5nm).dat', 'w')
 outFile1.write("Separation Potential\n")
 outFile2.write("Separation Potential\n")
 
-rod1 = Rod(0,0,0,5,34,10,10,34)
+rod1 = Rod(0,0,0,5,34,20,20,68)
 
 print "Side by side"
 for n,d in tqdm(enumerate(dList)):
@@ -216,7 +216,7 @@ ax2.legend(('side to side', 'tip to tip'), frameon=False)
 
 plt.xlabel('distance between rods (nm)')
 plt.tight_layout()
-plt.savefig(r'Z:\Geeta-Share\rod assembly\interaction potential\rod_potentials(final-1nm).png', dpi=300)
+plt.savefig(r'Z:\Geeta-Share\rod assembly\interaction potential\rod_potentials(final-0.5nm).png', dpi=300)
 rod1.visualize()
 plt.show()
 
