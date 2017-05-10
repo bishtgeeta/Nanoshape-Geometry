@@ -182,7 +182,7 @@ outFile2 = open(r'Z:\Geeta-Share\rod assembly\interaction potential\interactionP
 outFile1.write("Separation Potential\n")
 outFile2.write("Separation Potential\n")
 
-mesh_size = 0.5
+mesh_size = 1
 rod1 = Rod(0,0,0,5,34,mesh_size)
 x_extent = rod1.x_extent
 z_extent = rod1.z_extent

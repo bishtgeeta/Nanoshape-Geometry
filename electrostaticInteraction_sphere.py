@@ -10,7 +10,7 @@ class Sphere(object):
         ## make a cuboid first, and remove extra bits from it.
         L = W = H = R*2
         Nx = Ny = Nz = int(R*2 / mesh_size)
-        dx,dy,dz = mesh_size
+        dx = dy = dz = mesh_size
         self.mesh_size = mesh_size
         
         self.radius = R
@@ -92,7 +92,7 @@ class Sphere(object):
         xo,yo,zo = outer_points.T
         ax.scatter(xi,yi,zi,color='steelblue')
         ax.scatter(xo,yo,zo,color='orangered', c='orangered')
-        plt.savefig(r'Z:\Geeta-Share\sphere assembly\interaction potential\sphere_geometry(final-0.5nm).png', dpi=300)
+        plt.savefig(r'Z:\Geeta-Share\sphere assembly\interaction potential\sphere_geometry(final2-1nm).png', dpi=300)
 
     def shift(self, d):
         new = copy.deepcopy(self)
@@ -153,7 +153,7 @@ start = time.time()
 timeList,dList = [],numpy.concatenate((numpy.linspace(0,10,101),range(11,101)))
 Uside2sideArray = numpy.zeros((len(dList), 2))
 
-outFile1 = open(r'Z:\Geeta-Share\sphere assembly\interaction potential\interactionPotential_spheres(final-0.5nm).dat', 'w')
+outFile1 = open(r'Z:\Geeta-Share\sphere assembly\interaction potential\interactionPotential_spheres(final2-1nm).dat', 'w')
 outFile1.write("Separation Potential\n")
 
 mesh_size = 1
@@ -187,7 +187,7 @@ ax2.set_ylabel('Van der waal potential')
 
 plt.xlabel('distance between spheres (nm)')
 plt.tight_layout()
-plt.savefig(r'Z:\Geeta-Share\sphere assembly\interaction potential\InteractionPotentials_sphere(final-0.5nm).png', dpi=300)
+plt.savefig(r'Z:\Geeta-Share\sphere assembly\interaction potential\InteractionPotentials_sphere(fina2-1nm).png', dpi=300)
 sphere1.visualize()
 plt.show()
 

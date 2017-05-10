@@ -9,7 +9,7 @@ class Cube(object):
     def __init__(self,x,y,z,S,mesh_size):
         L = W = H = S
         Nx = Ny = Nz = int(S / mesh_size)
-        dx,dy,dz = mesh_size
+        dx = dy = dz = mesh_size
         self.mesh_size = mesh_size
         self.center = numpy.array([x + L/2., y + W/2., z + H/2.])
         
@@ -85,7 +85,7 @@ class Cube(object):
         xo,yo,zo = outer_points.T
         ax.scatter(xi,yi,zi,color='steelblue')
         ax.scatter(xo,yo,zo,color='orangered', c='orangered')
-        plt.savefig(r'Z:\Geeta-Share\cubes assembly\interaction potential\cube_geometry(final-0.5nm).png', dpi=300)
+        plt.savefig(r'Z:\Geeta-Share\cubes assembly\interaction potential\  (final-0.5nm).png', dpi=300)
 
     def shift(self, d):
         new = copy.deepcopy(self)
