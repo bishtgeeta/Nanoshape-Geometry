@@ -4,6 +4,7 @@ from mpl_toolkits.mplot3d import Axes3D
 import time
 from tqdm import tqdm
 import copy
+from os.path import join
 
 class Rod(object):
     def __init__(self,x,y,z,R,H,mesh_size):
@@ -85,7 +86,7 @@ class Rod(object):
         if height_from_center > self.max_height/2.:
             return False
         
-        if (numpy.linalg.norm(vector_from_center[:2]) - self.radius > self.mesh_size*1e-2):
+        if numpy.linalg.norm(vector_from_center[:2]) > self.radius:
             return False
             
         return True
@@ -113,7 +114,6 @@ class Rod(object):
         xo,yo,zo = outer_points.T
         ax.scatter(xi,yi,zi,color='steelblue')
         ax.scatter(xo,yo,zo,color='orangered', c='orangered')
-        plt.savefig(r'Z:\Geeta-Share\rod assembly\interaction potential\rod_geometry(final-0.5nm).png', dpi=300)
              
     def shift(self, d):
         new = copy.deepcopy(self)
@@ -166,26 +166,29 @@ def interactionPotential(rod1,rod2):
     ps = sigma * 0.49
     Vdw = A/6 * ( (2*ps**2 / (r**2 - 4*ps**2) ) +  ( 2*ps**2/r**2 ) +  numpy.log( (r**2 - 4*ps**2 ) / r**2) ).sum()
     Vdw /= (kB*T)
-    print r.min()
+    print r.min(), (r == r.min()).sum()
     
     return U,Vdw
     
     
 
 
-start = time.time()
-timeList,dList = [],numpy.concatenate((numpy.linspace(0,10,101),range(11,101)))
-Uside2sideArray, Utip2tipArray = numpy.zeros((len(dList), 2)), numpy.zeros((len(dList), 2))
 
-outFile1 = open(r'Z:\Geeta-Share\rod assembly\interaction potential\interactionPotential_s2s_rod(final-0.5nm).dat', 'w')
-outFile2 = open(r'Z:\Geeta-Share\rod assembly\interaction potential\interactionPotential_t2t_rod(final-0.5nm).dat', 'w')
-outFile1.write("Separation Potential\n")
-outFile2.write("Separation Potential\n")
-
+root = r'Z:\Geeta-Share\rod assembly\interaction potential'
+name = 'rod'
 mesh_size = 1
 rod1 = Rod(0,0,0,5,34,mesh_size)
 x_extent = rod1.x_extent
 z_extent = rod1.z_extent
+
+start = time.time()
+timeList,dList = [],numpy.concatenate((numpy.linspace(0,10,101),range(11,101)))
+Uside2sideArray, Utip2tipArray = numpy.zeros((len(dList), 2)), numpy.zeros((len(dList), 2))
+
+outFile1 = open(join(root, 'interactionPotential_s2s_{0}(final-{1}nm).dat'.format(name, mesh_size)), 'w')
+outFile2 = open(join(root, 'interactionPotential_t2t_{0}(final-{1}nm).dat'.format(name, mesh_size)), 'w')
+outFile1.write("Separation Potential\n")
+outFile2.write("Separation Potential\n")
 
 print "Side by side"
 for n,d in tqdm(enumerate(dList)):
@@ -226,8 +229,9 @@ ax2.legend(('side to side', 'tip to tip'), frameon=False)
 
 plt.xlabel('distance between rods (nm)')
 plt.tight_layout()
-plt.savefig(r'Z:\Geeta-Share\rod assembly\interaction potential\rod_potentials(final-0.5nm).png', dpi=300)
+plt.savefig(join(root, '{0}_potential(final-{1}nm).png'.format(name, mesh_size)), dpi=300)
 rod1.visualize()
+plt.savefig(join(root, '{0}_geometry(final-{1}nm).png'.format(name, mesh_size)), dpi=300)
 plt.show()
 
 print "number of points in rod1 :"

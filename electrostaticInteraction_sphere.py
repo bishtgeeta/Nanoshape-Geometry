@@ -4,6 +4,7 @@ from mpl_toolkits.mplot3d import Axes3D
 import time
 from tqdm import tqdm
 import copy
+from os.path import join
 
 class Sphere(object):
     def __init__(self,x,y,z,R,mesh_size):
@@ -92,10 +93,11 @@ class Sphere(object):
         xo,yo,zo = outer_points.T
         ax.scatter(xi,yi,zi,color='steelblue')
         ax.scatter(xo,yo,zo,color='orangered', c='orangered')
-        plt.savefig(r'Z:\Geeta-Share\sphere assembly\interaction potential\sphere_geometry(final2-1nm).png', dpi=300)
+        
 
     def shift(self, d):
         new = copy.deepcopy(self)
+        new.center = new.center + d
         for key in new.allPointsDict.keys():
             new.allPointsDict[key] = new.allPointsDict[key] + d
         
@@ -143,23 +145,27 @@ def interactionPotential(rod1,rod2):
     ps = sigma * 0.49
     Vdw = A/6 * ( (2*ps**2 / (r**2 - 4*ps**2) ) +  ( 2*ps**2/r**2 ) +  numpy.log( (r**2 - 4*ps**2 ) / r**2) ).sum()
     Vdw /= (kB*T)
-    print r.min()
+    print r.min(), (r == r.min()).sum()
 
     return U,Vdw
     
 
     
-start = time.time()
-timeList,dList = [],numpy.concatenate((numpy.linspace(0,10,101),range(11,101)))
-Uside2sideArray = numpy.zeros((len(dList), 2))
 
-outFile1 = open(r'Z:\Geeta-Share\sphere assembly\interaction potential\interactionPotential_spheres(final2-1nm).dat', 'w')
-outFile1.write("Separation Potential\n")
 
+root = r'Z:\Geeta-Share\sphere assembly\interaction potential'
+name = 'sphere'
 mesh_size = 1
 sphere1 = Sphere(0,0,0,10,mesh_size)
 x_extent = sphere1.x_extent
 z_extent = sphere1.z_extent
+
+start = time.time()
+timeList,dList = [],numpy.concatenate((numpy.linspace(0,10,101),range(11,101)))
+Uside2sideArray = numpy.zeros((len(dList), 2))
+
+outFile1 = open(join(root, 'interactionPotential_{0}(final-{1}nm).dat'.format(name, mesh_size)), 'w')
+outFile1.write("Separation Potential\n")
 
 print "Sphere ..."
 for n,d in tqdm(enumerate(dList)):
@@ -187,8 +193,9 @@ ax2.set_ylabel('Van der waal potential')
 
 plt.xlabel('distance between spheres (nm)')
 plt.tight_layout()
-plt.savefig(r'Z:\Geeta-Share\sphere assembly\interaction potential\InteractionPotentials_sphere(fina2-1nm).png', dpi=300)
+plt.savefig(join(root, '{0}_potential(final-{1}nm).png'.format(name, mesh_size)), dpi=300)
 sphere1.visualize()
+plt.savefig(join(root, '{0}_geometry(final-{1}nm).png'.format(name, mesh_size)), dpi=300)
 plt.show()
 
 print "number of points in sphere1:"
