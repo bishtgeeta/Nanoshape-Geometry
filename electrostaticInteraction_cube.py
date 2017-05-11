@@ -134,7 +134,7 @@ def interactionPotential(rod1,rod2):
     points2 = rod2.allPointsDict['allPoints']
     distance_vector = numpy.dstack((numpy.subtract.outer(points1[:,i], points2[:,i]) for i in range(3)))
     r = numpy.linalg.norm(distance_vector, axis=-1)*1e-9
-    ps = sigma * 0.49
+    ps = sigma * 0.499
     Vdw = A/6 * ( (2*ps**2 / (r**2 - 4*ps**2) ) +  ( 2*ps**2/r**2 ) +  numpy.log( (r**2 - 4*ps**2 ) / r**2) ).sum()
     Vdw /= (kB*T)
     print r.min(), (r == r.min()).sum()
