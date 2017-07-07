@@ -108,6 +108,8 @@ def interactionPotential(rod1,rod2):
     kB = 1.38e-23
     T = 300
     A = 40e-20
+    z1 = 0.0144
+    z2 = 0.0144
 
     for key1 in rod1.allPointsDict.keys():
         if (key1 == 'allPoints'):
@@ -126,8 +128,9 @@ def interactionPotential(rod1,rod2):
             point2 = rod2.allPointsDict[key2]
             distance_vector = numpy.dstack((numpy.subtract.outer(point1[:,i], point2[:,i]) for i in range(3)))
             r = numpy.linalg.norm(distance_vector, axis=-1)*1e-9
-            
-            U += (i_4PiEps*e**2/(eps0*r) * numpy.exp(-kappa*(r-sigma))/(1+kappa*sigma) / (kB*T)).sum()
+            if (w1==0 or w2==0):
+                print "here"
+            U += (i_4PiEps*z1*z2*e**2/(eps0*r) * numpy.exp(-kappa*(r-sigma))/(1+kappa*sigma) / (kB*T)).sum()
 
     ## calculation of van der waals potential        
     points1 = rod1.allPointsDict['allPoints']
@@ -135,10 +138,9 @@ def interactionPotential(rod1,rod2):
     distance_vector = numpy.dstack((numpy.subtract.outer(points1[:,i], points2[:,i]) for i in range(3)))
     r = numpy.linalg.norm(distance_vector, axis=-1)*1e-9
     ps = sigma * 0.499
-    Vdw = A/6 * ( (2*ps**2 / (r**2 - 4*ps**2) ) +  ( 2*ps**2/r**2 ) +  numpy.log( (r**2 - 4*ps**2 ) / r**2) ).sum()
+    Vdw =  A/6 * ( (2*ps**2 / (r**2 - 4*ps**2) ) +  ( 2*ps**2/r**2 ) +  numpy.log( (r**2 - 4*ps**2 ) / r**2) ).sum()
     Vdw /= (kB*T)
     print r.min(), (r == r.min()).sum()
-
     return U,Vdw
     
 
@@ -153,7 +155,7 @@ x_extent = cube1.x_extent
 z_extent = cube1.z_extent
 
 start = time.time()
-timeList,dList = [],numpy.concatenate((numpy.linspace(0,10,101),range(11,101)))
+timeList,dList = [],numpy.concatenate((numpy.linspace(0,10,101),range(11,101)))                     
 Uside2sideArray = numpy.zeros((len(dList), 2))
 
 outFile1 = open(join(root, 'interactionPotential_{0}(final-{1}nm).dat'.format(name, mesh_size)), 'w')

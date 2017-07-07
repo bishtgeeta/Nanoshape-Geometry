@@ -14,8 +14,7 @@ eps0 = 81
 kB = 1.38e-23
 T = 300
 A = 40e-20    
-ps = 0.499e-9
-sigma = 1e-9
+ps = 9.99e-9
 distances = numpy.arange(20, 41, 1)
 
 Vdw = []
@@ -24,11 +23,11 @@ for r in distances:
     r = r*1e-9
     Vdw.append(calculate_van_der_waal(A, ps ,r))
    
-results = numpy.column_stack((distances-1, U, Vdw))
+results = numpy.column_stack((distances, Vdw))
 numpy.savetxt(r'Z:\Geeta-Share\point charge potential\whole_sphere.txt', results, header='distance, van der waal', delimiter= '  ')
 
 plt.figure()    
-plt.plot(distances - 1, Vdw)
+plt.plot(distances, Vdw)
 plt.yscale('log')
 plt.ylabel('van der waal energy (kBT)')
 plt.xlabel('distance between point particles (nm)')

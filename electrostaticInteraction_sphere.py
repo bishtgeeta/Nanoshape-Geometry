@@ -116,6 +116,7 @@ def interactionPotential(rod1,rod2):
     kB = 1.38e-23
     T = 300
     A = 40e-20
+    z = (3.09e-24)**2
 
     for key1 in rod1.allPointsDict.keys():
         if (key1 == 'allPoints'):
@@ -135,7 +136,7 @@ def interactionPotential(rod1,rod2):
             distance_vector = numpy.dstack((numpy.subtract.outer(point1[:,i], point2[:,i]) for i in range(3)))
             r = numpy.linalg.norm(distance_vector, axis=-1)*1e-9
             
-            U += (i_4PiEps*e**2/(eps0*r) * numpy.exp(-kappa*(r-sigma))/(1+kappa*sigma) / (kB*T)).sum()
+            U += (z*i_4PiEps/(eps0*r) * numpy.exp(-kappa*(r-sigma))/(1+kappa*sigma) / (kB*T)).sum()
 
     ## calculation of van der waals potential        
     points1 = rod1.allPointsDict['allPoints']
@@ -164,7 +165,7 @@ start = time.time()
 timeList,dList = [],numpy.concatenate((numpy.linspace(0,10,101),range(11,101)))
 Uside2sideArray = numpy.zeros((len(dList), 2))
 
-outFile1 = open(join(root, 'interactionPotential_{0}(final-{1}nm).dat'.format(name, mesh_size)), 'w')
+outFile1 = open(join(root, 'interactionPotential_{0}(finalzeta-{1}nm).dat'.format(name, mesh_size)), 'w')
 outFile1.write("Separation Potential\n")
 
 print "Sphere ..."
@@ -193,9 +194,9 @@ ax2.set_ylabel('Van der waal potential')
 
 plt.xlabel('distance between spheres (nm)')
 plt.tight_layout()
-plt.savefig(join(root, '{0}_potential(final-{1}nm).png'.format(name, mesh_size)), dpi=300)
+plt.savefig(join(root, '{0}_potential(finalzeta-{1}nm).png'.format(name, mesh_size)), dpi=300)
 sphere1.visualize()
-plt.savefig(join(root, '{0}_geometry(final-{1}nm).png'.format(name, mesh_size)), dpi=300)
+plt.savefig(join(root, '{0}_geometry(finalzeta-{1}nm).png'.format(name, mesh_size)), dpi=300)
 plt.show()
 
 print "number of points in sphere1:"
