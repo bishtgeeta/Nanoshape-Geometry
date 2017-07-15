@@ -4,6 +4,7 @@ from mpl_toolkits.mplot3d import Axes3D
 import time
 from tqdm import tqdm
 import copy
+import os
 from os.path import join
 
 class Cube(object):
@@ -143,20 +144,28 @@ def interactionPotential(rod1,rod2):
     print r.min(), (r == r.min()).sum()
     return U,Vdw
     
-
+def hydrophobic_potential(d, Dh):
+    gamma = 50e-3
+    Hy = 0.2
+    kB = 1.38e-23
+    T = 300
+    A = 9e-16
+    # ignore negative sign, we only care about the magnitude 
+    hydrophobic_potential = 2 * gamma * Hy * numpy.exp(-d/Dh) * A / (kB*T)
+    return hydrophobic_potential
     
 
 
 root = r'Z:\Geeta-Share\cube assembly\interaction potential'
 name = 'cube'
 mesh_size = 1
-cube1 = Cube(0,0,0,30,mesh_size)
+cube1 = Cube(0,0,0,4,mesh_size)
 x_extent = cube1.x_extent
 z_extent = cube1.z_extent
 
 start = time.time()
-timeList,dList = [],numpy.concatenate((numpy.linspace(0,10,101),range(11,101)))                     
-Uside2sideArray = numpy.zeros((len(dList), 2))
+timeList,dList = [],numpy.concatenate((numpy.linspace(0,10,11),range(11,51)))                     
+Uside2sideArray = numpy.zeros((len(dList), 5))
 
 outFile1 = open(join(root, 'interactionPotential_{0}(final-{1}nm).dat'.format(name, mesh_size)), 'w')
 outFile1.write("Separation Potential\n")
@@ -166,8 +175,11 @@ for n,d in tqdm(enumerate(dList)):
     d_vector = numpy.array([0,0,z_extent + d])
     cube2 = cube1.shift(d_vector)
     U,Vdw =  interactionPotential(cube1, cube2)
-    Uside2sideArray[n] = [U,Vdw]
-    outFile1.write("%f %.18e %.18e\n" %(d,U,Vdw))
+    hp1 = hydrophobic_potential(d, 0.5)
+    hp2 = hydrophobic_potential(d, 1)
+    hp3 = hydrophobic_potential(d, 2)
+    Uside2sideArray[n] = [U, Vdw, hp1, hp2, hp3]
+    outFile1.write("%f %.18e %.18e %.18e %.18e %.18e\n" %(d, U, Vdw, hp1, hp2, hp3))
 
 end = time.time()
 print "Total number of runs = ", len(dList)
