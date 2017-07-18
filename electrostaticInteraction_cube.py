@@ -150,7 +150,7 @@ def hydrophobic_potential(d, Dh):
     kB = 1.38e-23
     T = 300
     A = 9e-16
-    # ignore negative sign, we only care about the magnitude 
+    
     hydrophobic_potential = 2 * gamma * Hy * numpy.exp(-d/Dh) * A / (kB*T)
     return hydrophobic_potential
     
@@ -159,15 +159,15 @@ def hydrophobic_potential(d, Dh):
 root = r'Z:\Geeta-Share\cube assembly\interaction potential'
 name = 'cube'
 mesh_size = 1
-cube1 = Cube(0,0,0,4,mesh_size)
+cube1 = Cube(0,0,0,30,mesh_size)
 x_extent = cube1.x_extent
 z_extent = cube1.z_extent
 
 start = time.time()
-timeList,dList = [],numpy.concatenate((numpy.linspace(0,10,11),range(11,51)))                     
+timeList,dList = [],numpy.concatenate((numpy.linspace(0,10,101),range(11,101)))                     
 Uside2sideArray = numpy.zeros((len(dList), 5))
 
-outFile1 = open(join(root, 'interactionPotential_{0}(final-{1}nm).dat'.format(name, mesh_size)), 'w')
+outFile1 = open(join(root, 'interactionPotential_{0}(finalWith-Z&HP-{1}nm).dat'.format(name, mesh_size)), 'w')
 outFile1.write("Separation Potential\n")
 
 print "Cube ..."
@@ -188,24 +188,24 @@ print "Time for each run = {0} minutes".format((end-start)/(60. * len(dList)))
 
 outFile1.close()
     
-fig, (ax1, ax2) = plt.subplots(2, figsize=(5,7))
-ax1.plot(dList, Uside2sideArray[:,0], color='steelblue')
-ax1.set_yscale('log')
-ax1.set_ylabel('Coulomb potential')
+#fig, (ax1, ax2) = plt.subplots(2, figsize=(5,7))
+#ax1.plot(dList, Uside2sideArray[:,0], color='steelblue')
+#ax1.set_yscale('log')
+#ax1.set_ylabel('Coulomb potential')
 
-ax2.plot(dList, Uside2sideArray[:,1], color='steelblue')
-ax2.set_yscale('log')
-ax2.set_ylabel('Van der waal potential')
+#ax2.plot(dList, Uside2sideArray[:,1], color='steelblue')
+#ax2.set_yscale('log')
+#ax2.set_ylabel('Van der waal potential')
 
-plt.xlabel('distance between cubes (nm)')
-plt.tight_layout()
-plt.savefig(join(root, '{0}_potential(final-{1}nm).png'.format(name, mesh_size)), dpi=300)
-cube1.visualize()
-plt.savefig(join(root, '{0}_geometry(final-{1}nm).png'.format(name, mesh_size)), dpi=300)
-plt.show()
+#plt.xlabel('distance between cubes (nm)')
+#plt.tight_layout()
+#plt.savefig(join(root, '{0}_potential(final-{1}nm).png'.format(name, mesh_size)), dpi=300)
+#cube1.visualize()
+#plt.savefig(join(root, '{0}_geometry(final-{1}nm).png'.format(name, mesh_size)), dpi=300)
+#plt.show()
 
-print "number of points in cube1 :"
-for key, value in cube1.allPointsDict.items():
-    print key, value.shape[0]
+#print "number of points in cube1 :"
+#for key, value in cube1.allPointsDict.items():
+    #print key, value.shape[0]
  
-print cube1.allPointsDict['vertex'].shape[0] + cube1.allPointsDict['edge'].shape[0] + cube1.allPointsDict['face'].shape[0]
+#print cube1.allPointsDict['vertex'].shape[0] + cube1.allPointsDict['edge'].shape[0] + cube1.allPointsDict['face'].shape[0]
