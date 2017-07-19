@@ -109,8 +109,8 @@ def interactionPotential(rod1,rod2):
     kB = 1.38e-23
     T = 300
     A = 40e-20
-    z1 = 0.0144
-    z2 = 0.0144
+    z1 = 0.12
+    z2 = 0.12
 
     for key1 in rod1.allPointsDict.keys():
         if (key1 == 'allPoints'):
