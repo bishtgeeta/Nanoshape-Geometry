@@ -1,3 +1,5 @@
+##code is for BP with 4 facets
+
 import numpy
 import mayavi.mlab as maya
 import matplotlib.pyplot as plt
@@ -28,16 +30,14 @@ else:
     plt.show()
 
 
-root = r'Z:\Geeta-Share\bipyramid_sheet\interaction potential'
-import os
-root = os.getcwd()
-name = 'bp_sheet'
+root = r'W:\geeta\Rotation\InteractionPotential\BP4f_Sheet'
+name = 'bp4f_sheet'
 
 start = time.time()
 timeList,dList = [],numpy.concatenate((numpy.linspace(0,10,101),range(11,101)))
 Uside2sideArray = numpy.zeros((len(dList), 2))
 
-outFile1 = open(join(root, 'interactionPotential_s2s_{0}(final-{1}nm).dat'.format(name, mesh_size)), 'w')
+outFile1 = open(join(root, 'interactionPotential_s2s_{0}({1}nm).dat'.format(name, mesh_size)), 'w')
 outFile1.write("Separation Potential\n")
 
 
@@ -67,11 +67,10 @@ ax2.set_ylabel('Van der waal potential')
 
 plt.xlabel('distance between bipyramid and sheet (nm)')
 plt.tight_layout()
-plt.savefig(join(root, '{0}_potential(final-{1}nm).png'.format(name, mesh_size)), dpi=300)
+plt.savefig(join(root, '{0}_potential({1}nm).png'.format(name, mesh_size)), dpi=300)
 plt.show()
 
 
-print "number of points in bp :"
+print "number of points in bp4f :"
 for key, value in bp.allPointsDict.items():
     print key, value.shape[0]
-

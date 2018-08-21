@@ -2,7 +2,7 @@ import numpy
 
 def interactionPotential(shape1,shape2):
     U = 0
-    conc = 1e-3
+    conc = 1e-7
     kappa = 1/(0.304/numpy.sqrt(conc)*1e-9)
     sigma = shape1.mesh_size*1e-9  ## dx, dy, dz are equal to mesh_size
 
@@ -11,8 +11,8 @@ def interactionPotential(shape1,shape2):
     eps0 = 81
     kB = 1.38e-23
     T = 300
-    A = 40e-20
-    z = (3.09e-24)**2
+    A = 10e-20
+    #z = (3.09e-24)**2
 
     for key1 in shape1.allPointsDict.keys():
         if (key1 == 'allPoints'):
@@ -32,7 +32,7 @@ def interactionPotential(shape1,shape2):
             distance_vector = numpy.dstack((numpy.subtract.outer(point1[:,i], point2[:,i]) for i in range(3)))
             r = numpy.linalg.norm(distance_vector, axis=-1)*1e-9
             
-            U += (z*i_4PiEps/(eps0*r) * numpy.exp(-kappa*(r-sigma))/(1+kappa*sigma) / (kB*T)).sum()
+            U += (i_4PiEps*e**2/(eps0*r) * numpy.exp(-kappa*(r-sigma))/(1+kappa*sigma) / (kB*T)).sum()
 
     ## calculation of van der waals potential        
     points1 = shape1.allPointsDict['allPoints']

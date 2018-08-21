@@ -1,3 +1,5 @@
+##code is for BP with 5 facets
+
 import numpy
 import mayavi.mlab as maya
 import matplotlib.pyplot as plt
@@ -8,8 +10,8 @@ from shapes import BiPyramid5f, Sheet
 from utils import interactionPotential
 
 use_mayavi = True
-bp_height = 40 ## length along long axis
-bp_radius = 12  ## distance of pentagon vertex from center
+bp_height = 100 ## length along long axis
+bp_radius = 20  ## distance of pentagon vertex from center
 mesh_size = 1
 bp = BiPyramid5f(0,0,0,bp_radius,bp_height,mesh_size)
 tan_angle = bp_height / (2*bp_radius*numpy.cos(numpy.deg2rad(36)))
@@ -28,14 +30,14 @@ else:
     plt.show()
 
 
-root = r'Z:\Geeta-Share\bipyramid5f_sheet\interaction potential'
-name = 'bp_sheet'
+root = r'W:\geeta\Rotation\InteractionPotential\BP5f_Sheet'
+name = 'bp5f_sheet'
 
 start = time.time()
-timeList,dList = [],numpy.concatenate((numpy.linspace(0,10,101),range(11,101)))
+timeList,dList = [],numpy.concatenate((numpy.linspace(1,10,91),range(11,101)))
 Uside2sideArray = numpy.zeros((len(dList), 2))
 
-outFile1 = open(join(root, 'interactionPotential_s2s_{0}(final-{1}nm).dat'.format(name, mesh_size)), 'w')
+outFile1 = open(join(root, 'interactionPotential_s2s_{0}({1}nm).dat'.format(name, mesh_size)), 'w')
 outFile1.write("Separation Potential\n")
 
 
@@ -65,11 +67,10 @@ ax2.set_ylabel('Van der waal potential')
 
 plt.xlabel('distance between bipyramid and sheet (nm)')
 plt.tight_layout()
-plt.savefig(join(root, '{0}_potential(final-{1}nm).png'.format(name, mesh_size)), dpi=300)
+plt.savefig(join(root, '{0}_potential({1}nm).png'.format(name, mesh_size)), dpi=300)
 plt.show()
 
 
-print "number of points in bp :"
+print "number of points in bp5f :"
 for key, value in bp.allPointsDict.items():
     print key, value.shape[0]
-

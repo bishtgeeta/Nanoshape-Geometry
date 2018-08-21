@@ -1,0 +1,3 @@
+the values in the utils will be changed according to requirement. In the nanoshape with sheet interaction i have changed the value of few parameters and also did not used the value of z1 and z2 
+
+One code used for shufen can be found in older files of git
