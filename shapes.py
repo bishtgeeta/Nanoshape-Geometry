@@ -258,9 +258,17 @@ class Sphere(Shape):
         L = W = H = R*2
         self.radius = R
         self.shape_name = 'sphere'
-        self.center = numpy.array([x + R, y + R, z + R])
         super(Sphere, self).__init__(x,y,z,L,W,H,mesh_size)
         
     def within_shape(self, point):
         return numpy.linalg.norm(self.center - point) <= self.radius
+        
+class Point(Shape):
+    
+    def __init__(self, x, y, z, mesh_size):
+        L = W = H = mesh_size
+        super(Point, self).__init__(x, y, z, L, W, H, mesh_size)
+        
+    def within_shape(self, point):
+        return True
         
