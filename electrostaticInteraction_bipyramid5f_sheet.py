@@ -9,6 +9,9 @@ from os.path import join
 from shapes import BiPyramid5f, Sheet
 from utils import interactionPotential
 
+conc = 1e-7
+A = 10e-20
+
 use_mayavi = True
 bp_height = 100 ## length along long axis
 bp_radius = 20  ## distance of pentagon vertex from center
@@ -17,10 +20,19 @@ bp = BiPyramid5f(0,0,0,bp_radius,bp_height,mesh_size)
 tan_angle = bp_height / (2*bp_radius*numpy.cos(numpy.deg2rad(36)))
 angle = numpy.arctan(tan_angle) + numpy.pi
 bp = bp.rotate('y', angle)
-sheet = Sheet(-20,-20,0,50,50,1,mesh_size)
+sheet = Sheet(0,0,0,60,60,mesh_size,mesh_size)
 
 d = bp.get_extent()[2][0] - sheet.get_extent()[2][0] ## current distance between bp and sheet
 bp = bp.shift([0, 0, -d+mesh_size])  ## shift bipyramid close to sheet
+bp = bp.shift([-bp.center[0], -bp.center[1], 0])  ## align xy-plane center of bp to origin
+bp_x_extent = bp.get_extent()[0][-1]
+bp = bp.shift([bp_x_extent/4., 0, 0]) ## dimaag mat lagao isko samajhne ke liye
+sheet = sheet.shift([-sheet.center[0]+5, -sheet.center[1], 0]) 
+### the above code gymnastic is to align the center of face of bp to
+### center of sheet. Protip - use clue from visualization to shift 
+### and align these shapes
+
+
 
 bp.visualize(use_mayavi)
 sheet.visualize(use_mayavi)
@@ -44,7 +56,7 @@ outFile1.write("Separation Potential\n")
 for n,d in tqdm(enumerate(dList)):
     d_vector = numpy.array([0, 0, d])
     new_bp = bp.shift(d_vector)
-    U,Vdw =  interactionPotential(new_bp, sheet)
+    U,Vdw =  interactionPotential(new_bp, sheet, conc, A)
     Uside2sideArray[n] = [U,Vdw]
     outFile1.write("%f %.18e %.18e\n" %(d,U,Vdw))
 

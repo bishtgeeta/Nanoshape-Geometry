@@ -8,6 +8,8 @@ from os.path import join
 from shapes import Cube
 from utils import interactionPotential, hydrophobic_potential
 
+conc = 1e-7
+A = 10e-20
 
 root = r'Z:\Geeta-Share\cube assembly\interaction potential'
 name = 'cube'
@@ -27,7 +29,7 @@ print "Cube ..."
 for n,d in tqdm(enumerate(dList)):
     d_vector = numpy.array([0,0,z_extent + d])
     cube2 = cube1.shift(d_vector)
-    U,Vdw =  interactionPotential(cube1, cube2)
+    U,Vdw =  interactionPotential(cube1, cube2,conc,A)
     hp1 = hydrophobic_potential(d, 0.5)
     hp2 = hydrophobic_potential(d, 1)
     hp3 = hydrophobic_potential(d, 2)

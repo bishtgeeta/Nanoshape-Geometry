@@ -8,7 +8,8 @@ from os.path import join
 from shapes import BiPyramid, Sheet
 from utils import interactionPotential
 
-
+conc = 1e-7
+A = 10e-20
 
 use_mayavi = True
 rod_height = 50 ## or length along long axis
@@ -43,7 +44,7 @@ outFile1.write("Separation Potential\n")
 for n,d in tqdm(enumerate(dList)):
     d_vector = numpy.array([0, 0, d])
     new_rod = rod.shift(d_vector)
-    U,Vdw =  interactionPotential(new_rod, sheet)
+    U,Vdw =  interactionPotential(new_rod, sheet, conc, A)
     Uside2sideArray[n] = [U,Vdw]
     outFile1.write("%f %.18e %.18e\n" %(d,U,Vdw))
 

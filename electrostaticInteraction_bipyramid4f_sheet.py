@@ -9,6 +9,9 @@ from os.path import join
 from shapes import BiPyramid, Sheet
 from utils import interactionPotential
 
+conc = 1e-7
+A = 10e-20
+
 use_mayavi = True
 bp_height = 30 ## or length along long axis
 bp_base_side = 10  ## base is a square
@@ -44,7 +47,7 @@ outFile1.write("Separation Potential\n")
 for n,d in tqdm(enumerate(dList)):
     d_vector = numpy.array([0, 0, d])
     new_bp = bp.shift(d_vector)
-    U,Vdw =  interactionPotential(new_bp, sheet)
+    U,Vdw =  interactionPotential(new_bp, sheet, conc, A)
     Uside2sideArray[n] = [U,Vdw]
     outFile1.write("%f %.18e %.18e\n" %(d,U,Vdw))
 

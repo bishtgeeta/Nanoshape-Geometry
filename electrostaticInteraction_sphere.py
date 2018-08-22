@@ -8,6 +8,8 @@ from os.path import join
 from shapes import Sphere
 from utils import interactionPotential
 
+conc = 1e-7
+A = 10e-20
 
 
 root = r'Z:\Geeta-Share\sphere assembly\interaction potential'
@@ -28,7 +30,7 @@ print "Sphere ..."
 for n,d in tqdm(enumerate(dList)):
     d_vector = numpy.array([0,0,z_extent + d])
     sphere2 = sphere1.shift(d_vector)
-    U,Vdw =  interactionPotential(sphere1, sphere2)
+    U,Vdw =  interactionPotential(sphere1, sphere2, conc, A)
     Uside2sideArray[n] = [U,Vdw]
     outFile1.write("%f %.18e %.18e\n" %(d,U,Vdw))
 

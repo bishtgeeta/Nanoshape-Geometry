@@ -7,6 +7,8 @@ from os.path import join
 from shapes import BiPyramid
 from utils import interactionPotential
 
+conc = 1e-7
+A = 10e-20
 
 root = r'Z:\Geeta-Share\bipyramid assembly\interaction potential'
 name = 'bp'
@@ -29,7 +31,7 @@ print "Side by side"
 for n,d in tqdm(enumerate(dList)):
     d_vector = numpy.array([x_extent + d, 0, 0])
     bp2 = bp1.shift(d_vector)
-    U,Vdw =  interactionPotential(bp1,bp2)
+    U,Vdw =  interactionPotential(bp1,bp2,conc,A)
     Uside2sideArray[n] = [U,Vdw]
     outFile1.write("%f %.18e %.18e\n" %(d,U,Vdw))
 
@@ -37,7 +39,7 @@ print "Tip to tip"
 for n,d in tqdm(enumerate(dList)):
     d_vector = numpy.array([0, 0, z_extent + d])
     bp2 = bp1.shift(d_vector)
-    U,Vdw = interactionPotential(bp1,bp2)
+    U,Vdw = interactionPotential(bp1,bp2,conc,A)
     Utip2tipArray[n] = [U,Vdw]
     outFile2.write("%f %.18e %.18e\n" %(d,U,Vdw))
 
