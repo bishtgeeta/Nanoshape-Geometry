@@ -26,6 +26,8 @@ else:
 
 
 root = r'W:\geeta\Rotation\InteractionPotential\point_Sheet'
+import os
+root = os.getcwd()
 name = 'point_sheet'
 
 start = time.time()
@@ -60,7 +62,7 @@ ax2.plot(dList, Uside2sideArray[:,1], color='steelblue')
 ax2.set_yscale('log')
 ax2.set_ylabel('Van der waal potential')
 
-plt.xlabel('distance between bipyramid and sheet (nm)')
+plt.xlabel('distance between point and sheet (nm)')
 plt.tight_layout()
 plt.savefig(join(root, '{0}_potential({1}nm).png'.format(name, mesh_size)), dpi=300)
 plt.show()
