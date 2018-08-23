@@ -13,8 +13,8 @@ A = 10e-20
 use_mayavi = True
 mesh_size = 1
 p = Point(0,0,0,mesh_size)
-sheet = Sheet(0,0,0,60,60,1,mesh_size)
-sheet = sheet.shift([-sheet.center[0], -sheet.center[1], 1])
+sheet = Sheet(0,0,0,50,50,1,mesh_size)
+sheet = sheet.shift([-sheet.center[0], -sheet.center[1], -1])
 
 
 p.visualize(use_mayavi)
@@ -29,10 +29,10 @@ root = r'W:\geeta\Rotation\InteractionPotential\point_Sheet'
 name = 'point_sheet'
 
 start = time.time()
-timeList,dList = [],numpy.concatenate((numpy.linspace(1,10,91),range(11,101)))
+timeList,dList = [],numpy.concatenate((numpy.linspace(0,10,101),range(11,101)))
 Uside2sideArray = numpy.zeros((len(dList), 2))
 
-outFile1 = open(join(root, 'interactionPotential_s2s_{0}({1}nm).dat'.format(name, mesh_size)), 'w')
+outFile1 = open(join(root, 'interactionPotential{0}({1}nm).dat'.format(name, mesh_size)), 'w')
 outFile1.write("Separation Potential\n")
 
 

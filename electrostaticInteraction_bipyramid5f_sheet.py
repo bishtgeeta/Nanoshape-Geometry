@@ -20,7 +20,7 @@ bp = BiPyramid5f(0,0,0,bp_radius,bp_height,mesh_size)
 tan_angle = bp_height / (2*bp_radius*numpy.cos(numpy.deg2rad(36)))
 angle = numpy.arctan(tan_angle) + numpy.pi
 bp = bp.rotate('y', angle)
-sheet = Sheet(0,0,0,60,60,mesh_size,mesh_size)
+sheet = Sheet(0,0,0,50,50,mesh_size,mesh_size)
 
 d = bp.get_extent()[2][0] - sheet.get_extent()[2][0] ## current distance between bp and sheet
 bp = bp.shift([0, 0, -d+mesh_size])  ## shift bipyramid close to sheet

@@ -5,7 +5,7 @@ import time
 from tqdm import tqdm
 import copy
 from os.path import join
-from shapes import BiPyramid, Sheet
+from shapes import Rod, Sheet
 from utils import interactionPotential
 
 conc = 1e-7
