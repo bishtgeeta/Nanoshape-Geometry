@@ -5,7 +5,7 @@ import time
 from tqdm import tqdm
 from os.path import join
 from shapes import Point, Sheet
-from utils import interactionPotential
+from utils import interactionPotential, animate
 
 conc = 1e-7
 A = 10e-20
@@ -19,13 +19,19 @@ sheet = sheet.shift([-sheet.center[0], -sheet.center[1],-0.55])
 
 p.visualize(use_mayavi)
 sheet.visualize(use_mayavi)
+
 if use_mayavi:
     maya.show()
+    #~ fig1, fig2 = maya.gcf().children
+    ## fig1 is point, fig2 is sheet according to the order in which
+    ## `visualize` was called
 else:
     plt.show()
 
 
 root = r'W:\geeta\Rotation\InteractionPotential\point(0.1)_Sheet'
+import os
+root = os.getcwd()
 name = 'point(0.1)_sheet'
 
 start = time.time()

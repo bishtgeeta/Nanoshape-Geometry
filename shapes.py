@@ -89,8 +89,12 @@ class Shape(object):
         xi,yi,zi = inner_points.T
         xo,yo,zo = outer_points.T
         if use_mayavi:
-            maya.points3d(xo,yo,zo,color=(0.2,0.2,0.8),scale_factor=1)
-            maya.points3d(xi,yi,zi,color=(0.8,0.2,0),scale_factor=0.5)
+            #~ numpy.ones_like(xo)*self.mesh_size,
+            #~ numpy.ones_like(xi)*self.mesh_size,
+            if xo.shape[0] > 0:
+                maya.points3d(xo,yo,zo, color=(0.2,0.2,0.8), scale_factor=1)
+            if xi.shape[0] > 0:
+                maya.points3d(xi,yi,zi, color=(0.8,0.2,0), scale_factor=1)
         else:
             fig = plt.figure()
             ax = Axes3D(fig)

@@ -1,9 +1,10 @@
 import numpy
+import mayavi.mlab as maya
 
 def interactionPotential(shape1,shape2,conc,A,T=300,z=1):
     U = 0
     kappa = 1/(0.304/numpy.sqrt(conc)*1e-9)
-    sigma = shape1.mesh_size*1e-9  ## dx, dy, dz are equal to mesh_size
+    sigma = shape2.mesh_size*1e-9  ## dx, dy, dz are equal to mesh_size
 
     e = 1.6e-19
     i_4PiEps = 9e9
@@ -52,3 +53,14 @@ def hydrophobic_potential(d, Dh):
     
     hydrophobic_potential = 2 * gamma * Hy * numpy.exp(-d/Dh) * A / (kB*T)
     return hydrophobic_potential
+    
+    
+@maya.animate(delay=100)
+def animate(fig, xs, ys, zs):
+    while True:
+        for (x, y, z) in zip(xs, ys, zs):
+            fig.mlab_source.set(x=x, y=y, z=z)
+            fig.scene.render()
+            yield
+
+
