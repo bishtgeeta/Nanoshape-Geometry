@@ -48,15 +48,15 @@ def interactionPotential(shape1,shape2,conc,A,T=300,z=1):
 
     return U,Vdw
     
-def hydrophobic_potential(d, Dh):
-    gamma = 50e-3
-    Hy = 0.2
-    kB = 1.38e-23
-    T = 300
-    A = 9e-16
+#def hydrophobic_potential(d, Dh):
+    #gamma = 50e-3
+    #Hy = 0.2
+    #kB = 1.38e-23
+    #T = 300
+    #A = 9e-16
     
-    hydrophobic_potential = 2 * gamma * Hy * numpy.exp(-d/Dh) * A / (kB*T)
-    return hydrophobic_potential
+    #hydrophobic_potential = 2 * gamma * Hy * numpy.exp(-d/Dh) * A / (kB*T)
+    #return hydrophobic_potential
     
     
 @maya.animate(delay=100)
@@ -66,5 +66,3 @@ def animate(fig, xs, ys, zs):
             fig.mlab_source.set(x=x, y=y, z=z)
             fig.scene.render()
             yield
-
-

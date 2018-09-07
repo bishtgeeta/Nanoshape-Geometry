@@ -43,7 +43,7 @@ else:
 
 
 root = r'W:\geeta\Rotation\InteractionPotential\BP5f_Sheet'
-name = 'bp5f_sheet'
+name = 'bp5f_sheet_test'
 
 start = time.time()
 timeList,dList = [],numpy.concatenate((numpy.linspace(1,10,91),range(11,101)))
