@@ -5,8 +5,8 @@ def interactionPotential(shape1,shape2,conc,A,T=300,z=1):
     U = 0
     kappa = 1/(0.304/numpy.sqrt(conc)*1e-9)
     sigma = shape2.mesh_size*1e-9  ## dx, dy, dz are equal to mesh_size
-    R1 = shape1.mesh_size*1e-9
-    R2 = shape2.mesh_size*1e-9
+    R1 = shape1.mesh_size*1e-9*0.5
+    R2 = shape2.mesh_size*1e-9*0.5
 
     e = 1.6e-19
     i_4PiEps = 9e9
@@ -40,9 +40,9 @@ def interactionPotential(shape1,shape2,conc,A,T=300,z=1):
     distance_vector = numpy.dstack((numpy.subtract.outer(points1[:,i], points2[:,i]) for i in range(3)))
     r = numpy.linalg.norm(distance_vector, axis=-1)*1e-9
     r_square = r**2
-    term1 = r**2 - (R1+R2)**2
-    term2 = r**2 - (R1-R2)**2
-    Vdw = A/6 * 2*R1*R2 * ( 1/term1 + 1/term2 + numpy.log(term1/term2) ).sum()
+    term1 = r_square - (R1+R2)**2
+    term2 = r_square - (R1-R2)**2
+    Vdw = A/6 * ( 2*R1*R2 * ( 1/term1 + 1/term2 ) + numpy.log(term1/term2) ).sum()
     Vdw /= (kB*T)
     #~ print r.min(), (r == r.min()).sum()
 
