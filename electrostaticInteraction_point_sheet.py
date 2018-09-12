@@ -7,7 +7,7 @@ from os.path import join
 from shapes import Point, Sheet
 from utils import interactionPotential
 
-conc = 1e-7
+conc = 1e-5
 A = 10e-20
 
 use_mayavi = True
@@ -26,7 +26,7 @@ else:
 
 
 root = r'W:\geeta\Rotation\InteractionPotential\point_Sheet'
-name = 'point_sheet'
+name = 'point_sheet1'
 
 start = time.time()
 timeList,dList = [],numpy.concatenate((numpy.linspace(0,10,101),range(11,101)))

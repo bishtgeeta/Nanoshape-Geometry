@@ -5,8 +5,8 @@ def interactionPotential(shape1,shape2,conc,A,T=300,z=1):
     U = 0
     kappa = 1/(0.304/numpy.sqrt(conc)*1e-9)
     sigma = shape2.mesh_size*1e-9  ## dx, dy, dz are equal to mesh_size
-    R1 = shape1.mesh_size*1e-9*0.5
-    R2 = shape2.mesh_size*1e-9*0.5
+    R1 = shape1.mesh_size*1e-9*0.499
+    R2 = shape2.mesh_size*1e-9*0.499
 
     e = 1.6e-19
     i_4PiEps = 9e9
