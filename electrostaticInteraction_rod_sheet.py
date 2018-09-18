@@ -8,7 +8,7 @@ from os.path import join
 from shapes import Rod, Sheet
 from utils import interactionPotential
 
-conc = 1e-7
+conc = 1e-5
 A = 10e-20
 
 use_mayavi = True
@@ -18,20 +18,20 @@ mesh_size = 1
 rod = Rod(-rod_radius,-rod_radius,0,rod_radius,rod_height,mesh_size)
 rod = rod.rotate('x', numpy.pi/2)
 sheet = Sheet(-25,-25,0,50,50,1,mesh_size)
+sheet = sheet.shift([0, 1, 0])
 
 d = rod.get_extent()[2][0] - sheet.get_extent()[2][0] ## current distance between rod and sheet
 rod = rod.shift([0, 0, -d+mesh_size])  ## shift rod close to sheet
 
 rod.visualize(use_mayavi)
-sheet.visualize(use_mayavi)
+sheet.visualize(use_mayavi, out_color=(0.11,0.35,0.15), in_color=(0.2,0.8,0.2))
 if use_mayavi:
     maya.show()
 else:
     plt.show()
-
-
+    
 root = r'W:\geeta\Rotation\InteractionPotential\Rod_Sheet'
-name = 'rod_sheet'
+name = 'rod_sheet_1'
 
 start = time.time()
 timeList,dList = [],numpy.concatenate((numpy.linspace(1,10,91),range(11,101)))

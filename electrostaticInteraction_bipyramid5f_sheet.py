@@ -27,7 +27,7 @@ bp = bp.shift([0, 0, -d+mesh_size])  ## shift bipyramid close to sheet
 bp = bp.shift([-bp.center[0], -bp.center[1], 0])  ## align xy-plane center of bp to origin
 bp_x_extent = bp.get_extent()[0][-1]
 bp = bp.shift([bp_x_extent/4., 0, 0]) ## dimaag mat lagao isko samajhne ke liye
-sheet = sheet.shift([-sheet.center[0]+5, -sheet.center[1], 0]) 
+sheet = sheet.shift([-sheet.center[0]+3, -sheet.center[1], 0]) 
 ### the above code gymnastic is to align the center of face of bp to
 ### center of sheet. Protip - use clue from visualization to shift 
 ### and align these shapes
@@ -41,9 +41,8 @@ if use_mayavi:
 else:
     plt.show()
 
-
 root = r'W:\geeta\Rotation\InteractionPotential\BP5f_Sheet'
-name = 'bp5f_sheet_test'
+name = 'bp5f_sheet_3'
 
 start = time.time()
 timeList,dList = [],numpy.concatenate((numpy.linspace(1,10,91),range(11,101)))

@@ -80,7 +80,7 @@ class Shape(object):
         self.weights['face'] = 1.0
         self.weights['inner'] = 0.0 
         
-    def visualize(self, use_mayavi=True):
+    def visualize(self, use_mayavi=True, out_color=(0.2,0.2,0.8), in_color=(0.8,0.2,0)):
         vertex_points = self.allPointsDict['vertex']
         edge_points = self.allPointsDict['edge']
         face_points = self.allPointsDict['face']
@@ -92,9 +92,9 @@ class Shape(object):
             #~ numpy.ones_like(xo)*self.mesh_size,
             #~ numpy.ones_like(xi)*self.mesh_size,
             if xo.shape[0] > 0:
-                maya.points3d(xo,yo,zo, color=(0.2,0.2,0.8), scale_factor=1)
+                maya.points3d(xo,yo,zo, color=out_color, scale_factor=1)
             if xi.shape[0] > 0:
-                maya.points3d(xi,yi,zi, color=(0.8,0.2,0), scale_factor=1)
+                maya.points3d(xi,yi,zi, color=in_color, scale_factor=1)
         else:
             fig = plt.figure()
             ax = Axes3D(fig)
@@ -275,4 +275,3 @@ class Point(Shape):
         
     def within_shape(self, point):
         return True
-        
