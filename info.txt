@@ -1,3 +1,11 @@
 the values in the utils will be changed according to requirement. In the nanoshape with sheet interaction i have changed the value of few parameters and also did not used the value of z1 and z2 
 
 One code used for shufen can be found in older files of git
+
+
+The final code that is used to calculate the U and VDW of Rod and BP with sheet have R1 and R2 values of 0.5 in utils. check commit in git of date with name "minor changes" om 13 september.
+
+On 13 september i changed value for R1 and R2 ot 0.499 coz it was giving floating point error values for point sheet code. If i have to re run the code and need exact values then for BP and rod R1 and R2 should be 0.5 and for point it should be 0.499.
+
+
+
