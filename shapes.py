@@ -283,7 +283,7 @@ class RodWithRoundEnds(Shape):
         outer_hemisphere_points = numpy.concatenate(outer_hemisphere_points_list)
         self.allPointsDict['inner_hemisphere'] = inner_hemisphere_points
         self.allPointsDict['outer_hemisphere'] = outer_hemisphere_points
-        for key in self.weights.keys():
+        for key in self.allPointsDict.keys():
             if 'hemisphere' in key:
                 self.weights[key] = 1
             else:
