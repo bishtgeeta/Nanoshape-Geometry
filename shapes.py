@@ -255,6 +255,83 @@ class Rod(Shape):
         if numpy.linalg.norm(vector_from_center[:2]) > self.radius:
             return False
         return True
+        
+     
+class RodWithRoundEnds(Shape):
+
+    def __init__(self,x,y,z,R,H, mesh_size):
+        L = W = 2*R
+        self.radius = R
+        self.max_height = H
+        self.cylinder_height = self.max_height - 2 * self.radius
+        self.shape_name = 'rod_round_ends'
+        super(RodWithRoundEnds, self).__init__(x,y,z,L,W,H,mesh_size)
+        outer_hemisphere_points_list = []
+        inner_hemisphere_points_list = []
+        for key in self.allPointsDict.keys():
+            if key  == 'allPoints':
+                continue
+            points = self.allPointsDict[key]
+            hemisphere_points = points[numpy.abs(points[:,2] - self.center[2]) > self.cylinder_height/2.0]
+            other_points = points[numpy.abs(points[:,2] - self.center[2]) <= self.cylinder_height/2.0]
+            self.allPointsDict[key] = other_points
+            if key == 'inner':
+                inner_hemisphere_points_list.append(hemisphere_points)
+            else:
+                outer_hemisphere_points_list.append(hemisphere_points)
+        inner_hemisphere_points = numpy.concatenate(inner_hemisphere_points_list)
+        outer_hemisphere_points = numpy.concatenate(outer_hemisphere_points_list)
+        self.allPointsDict['inner_hemisphere'] = inner_hemisphere_points
+        self.allPointsDict['outer_hemisphere'] = outer_hemisphere_points
+        for key in self.weights.keys():
+            if 'hemisphere' in key:
+                self.weights[key] = 1
+            else:
+                self.weights[key] = 0.6
+
+
+    def within_shape(self, point):
+        
+        vector_from_center = point - self.center
+        height_from_center = vector_from_center[2]
+        half_axis_distance = numpy.sign(height_from_center) * self.cylinder_height / 2.
+        half_axis_vector = numpy.array([0, 0, half_axis_distance])
+        hemisphere_center = self.center + half_axis_vector
+        if numpy.abs(height_from_center) > self.cylinder_height/2.:
+            if numpy.linalg.norm(point - hemisphere_center) > self.radius:
+                return False
+        if numpy.linalg.norm(vector_from_center[:2]) > self.radius:
+            return False
+        return True
+        
+    def visualize(self, use_mayavi=True, out_color=(0.2,0.2,0.8), in_color=(0.8,0.2,0)):
+        vertex_points = self.allPointsDict['vertex']
+        edge_points = self.allPointsDict['edge']
+        face_points = self.allPointsDict['face']
+        inner_points = self.allPointsDict['inner']
+        inner_hemisphere_points = self.allPointsDict['inner_hemisphere']
+        outer_hemisphere_points = self.allPointsDict['outer_hemisphere']
+        outer_points = numpy.row_stack((vertex_points, edge_points, face_points))
+        xi,yi,zi = inner_points.T
+        xo,yo,zo = outer_points.T
+        xih,yih,zih = inner_hemisphere_points.T
+        xoh,yoh,zoh = outer_hemisphere_points.T
+        if use_mayavi:
+            #~ numpy.ones_like(xo)*self.mesh_size,
+            #~ numpy.ones_like(xi)*self.mesh_size,
+            if xo.shape[0] > 0:
+                maya.points3d(xo,yo,zo, color=out_color, scale_factor=1)
+            if xi.shape[0] > 0:
+                maya.points3d(xi,yi,zi, color=in_color, scale_factor=1)
+            if xoh.shape[0] > 0:
+                maya.points3d(xoh,yoh,zoh, color=(0.2,0.2,0.4), scale_factor=1)
+            if xih.shape[0] > 0:
+                maya.points3d(xih,yih,zih, color=(0.4,0.2,0), scale_factor=1)
+        else:
+            fig = plt.figure()
+            ax = Axes3D(fig)
+            ax.scatter(xi,yi,zi,color='steelblue')
+            ax.scatter(xo,yo,zo,color='orangered', c='orangered')
 
 
 class Sphere(Shape):

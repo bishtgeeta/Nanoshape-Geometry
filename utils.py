@@ -32,7 +32,7 @@ def interactionPotential(shape1,shape2,conc,A,T=300,z=1):
             distance_vector = numpy.dstack((numpy.subtract.outer(point1[:,i], point2[:,i]) for i in range(3)))
             r = numpy.linalg.norm(distance_vector, axis=-1)*1e-9
             
-            U += (i_4PiEps*(z*e)**2/(eps0*r) * numpy.exp(-kappa*(r-sigma))/(1+kappa*sigma) / (kB*T)).sum()
+            U += w1*w2*(i_4PiEps*(z*e)**2/(eps0*r) * numpy.exp(-kappa*(r-sigma))/(1+kappa*sigma) / (kB*T)).sum()
 
     ## calculation of van der waals potential        
     points1 = shape1.allPointsDict['allPoints']
