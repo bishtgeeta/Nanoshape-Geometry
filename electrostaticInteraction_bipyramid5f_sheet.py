@@ -35,13 +35,13 @@ sheet = sheet.shift([-sheet.center[0]+3, -sheet.center[1], 0])
 
 
 bp.visualize(use_mayavi)
-sheet.visualize(use_mayavi)
+sheet.visualize(use_mayavi, out_color=(0.11,0.35,0.15), in_color=(0.2,0.8,0.2))
 if use_mayavi:
     maya.show()
 else:
     plt.show()
 
-root = r'W:\geeta\Rotation\InteractionPotential\BP5f_Sheet'
+root = r'W:\geeta\Rotation\InteractionPotential\BP5f_Sheet1'
 name = 'bp5f_sheet_3'
 
 start = time.time()

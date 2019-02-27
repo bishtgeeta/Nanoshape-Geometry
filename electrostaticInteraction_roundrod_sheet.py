@@ -9,7 +9,7 @@ from shapes import RodWithRoundEnds, Sheet
 from utils import interactionPotential
 
 
-conc = 1e-5
+conc = 1e-7
 A = 10e-20
 
 use_mayavi = True
@@ -32,7 +32,7 @@ else:
     plt.show()
     
 root = r'W:\geeta\Rotation\InteractionPotential\Roundrod_Sheet'
-name = 'roundrod_sheet'
+name = 'roundrod_sheet_4'
 
 start = time.time()
 timeList,dList = [],numpy.concatenate((numpy.linspace(1,10,91),range(11,101)))
